@@ -24,10 +24,9 @@ Package: `omada_batch`
   - `PlannedLan` (frozen dataclass): one planned LAN/VLAN unit for preview/push.
 
 - `omada_batch/storage/file_change_log.py`
-  - `append_file_change_log(action, target_path, ...)`: appends JSONL file change events with timestamp, action, path, rollback instructions, and optional details.
+  - `append_file_change_log(action, target_path, ...)`: appends JSONL file change events with timestamp, action, path and optional details.
   - `write_json_with_changelog(target_path, payload, ...)`: writes JSON and logs the change as `created` or `edited`.
   - `delete_file_with_changelog(target_path, ...)`: deletes a file and logs the change as `deleted`.
-  - Default changelog location is `backup/file_changelog.jsonl`.
 
 - `omada_batch/storage/profile_store.py`
   - `ProfileStore`

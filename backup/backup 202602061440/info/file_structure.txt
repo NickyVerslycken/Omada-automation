@@ -5,9 +5,9 @@ Python-Omada-automation/
   start-omada-app.pyw
   archive/
   backup/
-    file_changelog.jsonl
   data/
     controller_profiles.json
+    file_changelog.jsonl
   exports/
   info/
     file_structure.txt

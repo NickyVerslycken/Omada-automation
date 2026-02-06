@@ -36,7 +36,7 @@ Service/model/storage dependencies
 - `omada_batch/services/planner.py` -> `omada_batch/models/lan.py` (creates `PlannedLan`).
 - `omada_batch/storage/profile_store.py` -> `omada_batch/config.py` (data paths).
 - `omada_batch/storage/profile_store.py` -> `omada_batch/storage/file_change_log.py` (changelog-aware profile persistence).
-- `omada_batch/storage/file_change_log.py` -> `omada_batch/config.py` (default changelog path under `backup/`).
+- `omada_batch/storage/file_change_log.py` -> `omada_batch/config.py` (default changelog path under `data/`).
 
 Tests
 - `tests/test_planner.py` -> `omada_batch/services/planner.py`.
@@ -81,8 +81,7 @@ Tests
 
 `omada_batch/storage/file_change_log.py`
 - contains changelog helpers for create/edit/delete filesystem events.
-- centralizes JSONL logging to `backup/file_changelog.jsonl` by default.
-- includes per-entry rollback instructions to undo logged changes.
+- centralizes JSONL logging to `data/file_changelog.jsonl` by default.
 
 `omada_batch/ui/tabs/*.py`
 - contains pure view-builder functions.
