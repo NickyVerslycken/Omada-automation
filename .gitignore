@@ -8,3 +8,7 @@ exports/
 
 info/*.har
 !info/.gitkeep
+
+__pycache__/
+
+.vscode/
