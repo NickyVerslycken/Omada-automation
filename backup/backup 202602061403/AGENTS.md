@@ -15,17 +15,6 @@
   - **New files**: no backup required.
 - If the timestamp folder already exists (e.g., same minute), **reuse it** (do not fail).
 
-## Changelog policy (mandatory)
-- **Whenever a file is created, edited, deleted, or moved/renamed, append a changelog entry**.
-- Changelog file location: `<repo_root>/data/file_changelog.jsonl` (JSON Lines format, one event per line).
-- Required fields per changelog entry:
-  - timestamp (local ISO-8601 with timezone offset),
-  - action (`created`, `edited`, `deleted`, `moved`),
-  - absolute path of the affected file,
-  - details with practical context (source function/flow, counts, error context when relevant).
-- For move/rename, log at least source and destination paths in details.
-- Changelog writes are required for every run, same as backups; do not skip logging for bulk operations.
-
 ## File structure
 - when changing/creating/deleting a folder name, filename; update the file `info/file_structure.txt`.
 

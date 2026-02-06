@@ -1,0 +1,10 @@
+# keep folders but ignore their contents
+data/controller_profiles.json
+!data/.gitkeep
+
+archive/
+
+exports/
+
+info/*.har
+!info/.gitkeep

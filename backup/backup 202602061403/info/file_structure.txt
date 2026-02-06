@@ -7,7 +7,6 @@ Python-Omada-automation/
   backup/
   data/
     controller_profiles.json
-    file_changelog.jsonl
   exports/
   info/
     file_structure.txt
@@ -35,7 +34,6 @@ Python-Omada-automation/
       profile_service.py
     storage/
       __init__.py
-      file_change_log.py
       profile_store.py
     ui/
       __init__.py

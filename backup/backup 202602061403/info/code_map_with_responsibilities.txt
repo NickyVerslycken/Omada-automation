@@ -23,16 +23,11 @@ Package: `omada_batch`
 - `omada_batch/models/lan.py`
   - `PlannedLan` (frozen dataclass): one planned LAN/VLAN unit for preview/push.
 
-- `omada_batch/storage/file_change_log.py`
-  - `append_file_change_log(action, target_path, ...)`: appends JSONL file change events with timestamp, action, path and optional details.
-  - `write_json_with_changelog(target_path, payload, ...)`: writes JSON and logs the change as `created` or `edited`.
-  - `delete_file_with_changelog(target_path, ...)`: deletes a file and logs the change as `deleted`.
-
 - `omada_batch/storage/profile_store.py`
   - `ProfileStore`
-  - `__init__(path=None, changelog_path=None)`: selects default/legacy profile file and optional changelog destination.
+  - `__init__(path=None)`: selects default/legacy profile file.
   - `load_raw()`: reads and normalizes profile list from JSON.
-  - `save_raw(profiles)`: writes canonical profile JSON via changelog-aware writer.
+  - `save_raw(profiles)`: writes canonical profile JSON.
 
 - `omada_batch/services/profile_service.py`
   - `normalize_profile(item, index=0)`: canonicalizes profile keys and defaults.
@@ -77,16 +72,13 @@ UI package split
 - `omada_batch/ui/controllers/connection_controller.py`
   - `ConnectionControllerMixin`: profile CRUD/import/export and controller connect/disconnect/site workflows.
   - Connect flow now wires API raw JSON events into UI queue via `("devjson", payload)`.
-  - Export flow now writes profile JSON through changelog-aware storage helper.
 
 - `omada_batch/ui/controllers/networks_controller.py`
   - `NetworksControllerMixin`: gateway refresh/selection, current networks fetch/filter/export, interface catalog helpers.
   - `_network_matches_gateway(...)` now also considers extra Omada ownership fields such as `gatewayMac` and `assignIpDeviceMac`.
-  - Network export now writes JSON through changelog-aware storage helper.
 
 - `omada_batch/ui/controllers/batch_controller.py`
   - `BatchControllerMixin`: plan preview/export and push-to-controller workflow.
-  - Plan export now writes JSON through changelog-aware storage helper.
 
 - `omada_batch/ui/shell/app_shell.py`
   - `App` class (Tk root): composes mixins, owns queue/worker loop, creates notebook and tabs.
@@ -132,7 +124,6 @@ Tests
 - `tests/test_planner.py`
   - `test_generate_plan_count_and_vlan_range()`: planner output and VLAN range checks.
 - `tests/test_profile_store.py`
-  - `test_profile_store_roundtrip()`: profile save/load roundtrip plus changelog `created`/`edited` assertions.
-  - `test_delete_file_with_changelog()`: delete helper removes file and logs `deleted`.
+  - `test_profile_store_roundtrip()`: profile save/load roundtrip.
 - `tests/test_omada_client_parsing.py`
   - `test_client_init_sets_base_url_without_trailing_slash()`: base URL normalization.

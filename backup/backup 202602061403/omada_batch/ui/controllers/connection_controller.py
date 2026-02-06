@@ -8,7 +8,6 @@ from tkinter import filedialog, messagebox, simpledialog
 
 from omada_batch.api.omada_client import OmadaOpenApiClient
 from omada_batch.services.profile_service import normalize_profile
-from omada_batch.storage.file_change_log import write_json_with_changelog
 
 
 class ConnectionControllerMixin:
@@ -217,11 +216,8 @@ class ConnectionControllerMixin:
         )
         if not path:
             return
-        write_json_with_changelog(
-            path,
-            {"profiles": self.controller_profiles},
-            details={"source": "ConnectionControllerMixin.on_export_controller_profiles", "record_count": len(self.controller_profiles)},
-        )
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump({"profiles": self.controller_profiles}, f, indent=2)
         self._q.put(("log", f"Exported {len(self.controller_profiles)} profile(s) to {path}"))
 
     def on_connect(self) -> None:

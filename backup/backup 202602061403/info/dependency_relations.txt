@@ -23,25 +23,19 @@ UI composition split
 Controller dependencies
 - `connection_controller.py` -> `omada_batch/api/omada_client.py` (API client creation/use).
 - `connection_controller.py` -> `omada_batch/services/profile_service.py` (profile normalization).
-- `connection_controller.py` -> `omada_batch/storage/file_change_log.py` (profile export JSON writes with changelog).
 - `networks_controller.py` -> `omada_batch/services/lan_service.py` (device/interface catalog building).
 - `networks_controller.py` -> `omada_batch/services/device_service.py` (display/merge/extract interface helpers).
-- `networks_controller.py` -> `omada_batch/storage/file_change_log.py` (network export JSON writes with changelog).
 - `networks_controller.py` -> `omada_batch/ui/dialogs/interface_selector.py` (interface selection modal).
 - `batch_controller.py` -> `omada_batch/services/planner.py` (plan generation).
-- `batch_controller.py` -> `omada_batch/storage/file_change_log.py` (plan export JSON writes with changelog).
 
 Service/model/storage dependencies
 - `omada_batch/api/omada_client.py` -> `omada_batch/models/lan.py` (`create_lan_network` input type).
 - `omada_batch/services/planner.py` -> `omada_batch/models/lan.py` (creates `PlannedLan`).
 - `omada_batch/storage/profile_store.py` -> `omada_batch/config.py` (data paths).
-- `omada_batch/storage/profile_store.py` -> `omada_batch/storage/file_change_log.py` (changelog-aware profile persistence).
-- `omada_batch/storage/file_change_log.py` -> `omada_batch/config.py` (default changelog path under `data/`).
 
 Tests
 - `tests/test_planner.py` -> `omada_batch/services/planner.py`.
 - `tests/test_profile_store.py` -> `omada_batch/storage/profile_store.py`.
-- `tests/test_profile_store.py` -> `omada_batch/storage/file_change_log.py`.
 - `tests/test_omada_client_parsing.py` -> `omada_batch/api/omada_client.py`.
 
 2) Class/function ownership and usage direction
@@ -66,22 +60,15 @@ Tests
 - contains class `ConnectionControllerMixin`.
 - handles profile CRUD/import/export, controller auth/session connect, site list and disconnect flow.
 - forwards API request/response JSON payloads into queue event type `devjson`.
-- uses changelog-aware JSON writer when exporting controller profiles.
 
 `omada_batch/ui/controllers/networks_controller.py`
 - contains class `NetworksControllerMixin`.
 - handles gateway/device refresh, network fetch/filter/export, and gateway-to-network matching logic.
 - gateway/network matcher now checks additional ownership keys such as `gatewayMac` and `assignIpDeviceMac`.
-- uses changelog-aware JSON writer when exporting LAN networks.
 
 `omada_batch/ui/controllers/batch_controller.py`
 - contains class `BatchControllerMixin`.
 - handles plan generation, preview export, push loop, and push-button enablement state.
-- uses changelog-aware JSON writer when exporting batch plans.
-
-`omada_batch/storage/file_change_log.py`
-- contains changelog helpers for create/edit/delete filesystem events.
-- centralizes JSONL logging to `data/file_changelog.jsonl` by default.
 
 `omada_batch/ui/tabs/*.py`
 - contains pure view-builder functions.

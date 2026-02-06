@@ -11,7 +11,6 @@ from omada_batch.services.device_service import (
     merge_interface_catalog_names,
 )
 from omada_batch.services.lan_service import build_interface_catalog
-from omada_batch.storage.file_change_log import write_json_with_changelog
 from omada_batch.ui.dialogs.interface_selector import prompt_interface_selection
 
 
@@ -177,11 +176,8 @@ class NetworksControllerMixin:
         )
         if not path:
             return
-        write_json_with_changelog(
-            path,
-            self._networks_cache,
-            details={"source": "NetworksControllerMixin.on_export_networks", "record_count": len(self._networks_cache)},
-        )
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(self._networks_cache, f, indent=2)
         messagebox.showinfo("Exported", f"Saved to {path}")
 
     def _network_matches_gateway(self, network: Dict[str, Any], gateway: Dict[str, Any]) -> bool:

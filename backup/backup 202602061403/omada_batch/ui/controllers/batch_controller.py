@@ -1,10 +1,11 @@
 from __future__ import annotations
+
+import json
 from typing import Dict, List
 
 from tkinter import filedialog, messagebox
 
 from omada_batch.services.planner import generate_plan
-from omada_batch.storage.file_change_log import write_json_with_changelog
 
 
 class BatchControllerMixin:
@@ -70,11 +71,8 @@ class BatchControllerMixin:
             }
             for p in self.plan
         ]
-        write_json_with_changelog(
-            path,
-            obj,
-            details={"source": "BatchControllerMixin.on_export_plan", "record_count": len(obj)},
-        )
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(obj, f, indent=2)
         messagebox.showinfo("Exported", f"Saved to {path}")
 
     def on_push_plan(self) -> None:
