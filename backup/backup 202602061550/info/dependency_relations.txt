@@ -97,7 +97,6 @@ Tests
 - emits optional request/response JSON debug payloads.
 - uses preview truncation helper so short lines are not suffixed with `...`.
 - uses version fallback preference `v3 -> v2 -> v1` for key endpoint families where available.
-- enriches site device results using `networks/devices/ports` endpoint fallback so interface selection can use natural port names.
 
 `omada_batch/services/*.py`
 - contain pure-ish domain helpers invoked from controllers.
@@ -112,7 +111,7 @@ Connect flow
 
 Gateway/network flow
 1. Site select -> refresh gateways.
-2. Device list -> `get_device_port_details` enrichment -> `build_interface_catalog` -> gateway combos.
+2. Device list -> `build_interface_catalog` -> gateway combos.
 3. Network list -> `_apply_network_filter` based on gateway/device/interface matches.
 
 Batch flow

@@ -288,144 +288,21 @@ class OmadaOpenApiClient:
                     if isinstance(result, dict):
                         items = result.get("data")
                         if isinstance(items, list):
-                            enriched = self._enrich_devices_with_port_details(site_id, items)
                             self.log(
-                                f"SUCCESS GET {url.replace(self.base_url,'')} ({label}) rows={len(items)} "
-                                f"enriched_rows={len(enriched)}"
+                                f"SUCCESS GET {url.replace(self.base_url,'')} ({label}) rows={len(items)}"
                             )
-                            return enriched
+                            return items
                     if isinstance(result, list):
-                        enriched = self._enrich_devices_with_port_details(site_id, result)
                         self.log(
-                            f"SUCCESS GET {url.replace(self.base_url,'')} ({label}) rows={len(result)} "
-                            f"enriched_rows={len(enriched)}"
+                            f"SUCCESS GET {url.replace(self.base_url,'')} ({label}) rows={len(result)}"
                         )
-                        return enriched
+                        return result
                     raise RuntimeError("Unexpected device list response format.")
                 except Exception as e:
                     self.log(f"FAILED GET {url.replace(self.base_url,'')} ({label}): {e}")
                     last_err = e
 
         raise RuntimeError(f"Device list failed. Last error: {last_err}")
-
-    def _normalize_mac(self, value: Any) -> str:
-        text = str(value or "").strip().lower()
-        if not text:
-            return ""
-        return "".join(ch for ch in text if ch.isalnum())
-
-    def _extract_device_port_rows(self, payload: Any) -> List[Dict[str, Any]]:
-        if isinstance(payload, list):
-            return [x for x in payload if isinstance(x, dict)]
-        if isinstance(payload, dict):
-            rows = payload.get("data")
-            if isinstance(rows, list):
-                return [x for x in rows if isinstance(x, dict)]
-        return []
-
-    def get_device_port_details(self, site_id: str, macs: List[str], vlan: int = 1) -> List[Dict[str, Any]]:
-        if not self.omadac_id:
-            raise RuntimeError("omadacId unknown.")
-        clean_macs = [str(m).strip() for m in macs if str(m or "").strip()]
-        if not clean_macs:
-            return []
-
-        endpoint_candidates = [
-            ("v3", f"{self.base_url}/openapi/v3/{self.omadac_id}/sites/{site_id}/networks/devices/ports"),
-            ("v2", f"{self.base_url}/openapi/v2/{self.omadac_id}/sites/{site_id}/networks/devices/ports"),
-            ("v1", f"{self.base_url}/openapi/v1/{self.omadac_id}/sites/{site_id}/networks/devices/ports"),
-        ]
-        body_candidates: List[Tuple[str, Dict[str, Any]]] = [
-            (
-                "full",
-                {
-                    "macs": clean_macs,
-                    "vlanType": 0,
-                    "vlan": int(vlan),
-                    "assignIpDeviceType": 1,
-                    "assignIpDeviceMac": clean_macs[0],
-                },
-            ),
-            (
-                "full-no-assign-mac",
-                {"macs": clean_macs, "vlanType": 0, "vlan": int(vlan), "assignIpDeviceType": 1},
-            ),
-            ("minimal-vlan", {"macs": clean_macs, "vlanType": 0, "vlan": int(vlan)}),
-            ("minimal", {"macs": clean_macs}),
-        ]
-
-        last_err: Optional[Exception] = None
-        for api_ver, url in endpoint_candidates:
-            for body_label, body in body_candidates:
-                try:
-                    self.log(
-                        f"Trying POST {url.replace(self.base_url,'')} (device ports {api_ver}, payload={body_label}, macs={len(clean_macs)}) ..."
-                    )
-                    data = self._req("POST", url, headers=self._auth_headers(), json_body=body)
-                    if data.get("errorCode") != 0:
-                        raise RuntimeError(f"Device port details error {data.get('errorCode')}: {data.get('msg')}")
-                    rows = self._extract_device_port_rows(data.get("result"))
-                    if not rows:
-                        raise RuntimeError("Device port details response did not contain a list in result/data.")
-                    self.log(
-                        f"SUCCESS POST {url.replace(self.base_url,'')} (device ports {api_ver}, payload={body_label}) rows={len(rows)}"
-                    )
-                    return rows
-                except Exception as e:
-                    self.log(
-                        f"FAILED POST {url.replace(self.base_url,'')} (device ports {api_ver}, payload={body_label}): {e}"
-                    )
-                    last_err = e
-        raise RuntimeError(f"Device port details failed on all version/payload candidates. Last error: {last_err}")
-
-    def _enrich_devices_with_port_details(self, site_id: str, devices: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        macs = [str(d.get("mac") or d.get("macAddress") or "").strip() for d in devices if isinstance(d, dict)]
-        macs = [m for m in macs if m]
-        if not macs:
-            self.log("WARNING: Skipping device-port enrichment because no device MAC addresses were present.")
-            return devices
-
-        try:
-            rows = self.get_device_port_details(site_id, macs, vlan=1)
-        except Exception as exc:
-            self.log(f"WARNING: Device-port enrichment failed; continuing with raw device list only: {exc}")
-            return devices
-
-        by_mac: Dict[str, Dict[str, Any]] = {}
-        for row in rows:
-            key = self._normalize_mac(row.get("mac") or row.get("macAddress"))
-            if key:
-                by_mac[key] = row
-
-        out: List[Dict[str, Any]] = []
-        matched = 0
-        for dev in devices:
-            if not isinstance(dev, dict):
-                continue
-            merged = dict(dev)
-            key = self._normalize_mac(dev.get("mac") or dev.get("macAddress"))
-            row = by_mac.get(key)
-            if row:
-                matched += 1
-                ports = row.get("ports")
-                if isinstance(ports, list):
-                    merged["ports"] = ports
-                    merged["interfaces"] = ports
-                    interface_ids: List[str] = []
-                    for port in ports:
-                        if not isinstance(port, dict):
-                            continue
-                        pid = port.get("portId") or port.get("interfaceId") or port.get("id")
-                        if pid:
-                            interface_ids.append(str(pid))
-                    if interface_ids:
-                        merged["interfaceIds"] = interface_ids
-            out.append(merged)
-
-        self.log(
-            f"Device-port enrichment completed for siteId={site_id}: input_devices={len(devices)} matched_by_mac={matched} output_devices={len(out)}"
-        )
-        return out
 
     def get_site_gateways(self, site_id: str, page: int = 1, page_size: int = 500) -> List[Dict[str, Any]]:
         if not self.omadac_id:

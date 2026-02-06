@@ -46,49 +46,23 @@ def interface_display_name(iface: Dict[str, str]) -> str:
     return "Interface"
 
 
-def merge_interface_catalog_names(base: List[Dict[str, Any]], extra: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    merged: Dict[str, Dict[str, Any]] = {}
+def merge_interface_catalog_names(base: List[Dict[str, str]], extra: List[Dict[str, str]]) -> List[Dict[str, str]]:
+    merged: Dict[str, Dict[str, str]] = {}
     for it in extra:
         iid = str(it.get("id") or "").strip()
         if not iid:
             continue
-        copied = dict(it)
-        copied["id"] = iid
-        merged[iid] = copied
+        merged[iid] = {"id": iid, "name": str(it.get("name") or "").strip() or iid}
 
-    out: List[Dict[str, Any]] = []
-    seen: set[str] = set()
+    out: List[Dict[str, str]] = []
     for it in base:
         iid = str(it.get("id") or "").strip()
         if not iid:
             continue
-        seen.add(iid)
-        merged_item: Dict[str, Any] = dict(it)
-        merged_item["id"] = iid
-        extra_item = merged.get(iid, {})
-        for key, value in extra_item.items():
-            if key == "id":
-                continue
-            cur = merged_item.get(key)
-            if str(cur or "").strip():
-                continue
-            if str(value or "").strip():
-                merged_item[key] = value
-        current_best = interface_display_name(merged_item)
-        incoming_best = interface_display_name(extra_item) if extra_item else ""
-        if _is_generic_interface_name(current_best, iid) and incoming_best and not _is_generic_interface_name(incoming_best, iid):
-            merged_item["name"] = incoming_best
-        else:
-            merged_item["name"] = current_best or str(merged_item.get("name") or iid)
-        out.append(merged_item)
-
-    for iid, extra_item in merged.items():
-        if iid in seen:
-            continue
-        copied = dict(extra_item)
-        copied["id"] = iid
-        copied["name"] = interface_display_name(copied)
-        out.append(copied)
+        cur_name = _clean_interface_name(str(it.get("name") or "").strip(), iid)
+        if (not cur_name or cur_name == iid) and iid in merged:
+            cur_name = merged[iid].get("name") or cur_name
+        out.append({"id": iid, "name": _clean_interface_name(cur_name or iid, iid) or iid})
     return out
 
 

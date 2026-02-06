@@ -59,18 +59,18 @@ def build_interface_catalog(devices: List[Dict[str, Any]]) -> List[Dict[str, Any
             for it in raw_ifaces:
                 if not isinstance(it, dict):
                     continue
-                iid = it.get("portId") or it.get("interfaceId") or it.get("id")
+                iid = it.get("id") or it.get("interfaceId") or it.get("portId")
                 if not iid:
                     continue
                 sid = str(iid)
                 if sid not in iface_ids:
                     iface_ids.append(sid)
                 iname = str(
-                    it.get("name")
-                    or it.get("customName")
+                    it.get("customName")
                     or it.get("alias")
                     or it.get("portName")
                     or it.get("interfaceName")
+                    or it.get("name")
                     or it.get("ifName")
                     or it.get("displayName")
                     or it.get("ifname")
@@ -81,7 +81,6 @@ def build_interface_catalog(devices: List[Dict[str, Any]]) -> List[Dict[str, Any
                     {
                         "id": sid,
                         "name": iname,
-                        "port_id": str(it.get("portId") or ""),
                         "display_name": str(it.get("displayName") or ""),
                         "port_name": str(it.get("portName") or ""),
                         "interface_name": str(it.get("interfaceName") or ""),

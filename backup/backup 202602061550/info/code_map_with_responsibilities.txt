@@ -47,13 +47,13 @@ Package: `omada_batch`
   - `generate_plan(...)`: validates parameters and builds `PlannedLan` list + warnings.
 
 - `omada_batch/services/lan_service.py`
-  - `build_interface_catalog(devices)`: extracts gateway/switch + interface metadata, preferring stable `portId` IDs and natural port `name` labels.
+  - `build_interface_catalog(devices)`: extracts gateway/switch + interface metadata.
 
 - `omada_batch/services/device_service.py`
   - `_is_generic_interface_name(name, iid)`: detects placeholder names.
   - `_clean_interface_name(name, iid)`: strips noisy id suffixes.
   - `interface_display_name(iface)`: picks best label for UI display.
-  - `merge_interface_catalog_names(base, extra)`: enriches weak names while preserving rich interface metadata keys for display.
+  - `merge_interface_catalog_names(base, extra)`: enriches weak names using an extra catalog.
   - `extract_interface_catalog_from_networks(networks)`: derives interface id/name list from LAN payloads.
 
 - `omada_batch/api/omada_client.py`
@@ -68,9 +68,7 @@ Package: `omada_batch`
   - `get_access_token_client_credentials(...)`: obtains access token using fallback payload formats.
   - `get_sites(...)`: site listing (v3/v2/v1 fallback) with explicit success/fail logs.
   - `get_lan_networks(...)`: reads site LAN networks (v3/v2/v1 fallback) with explicit success/fail logs.
-  - `get_site_devices(...)`: reads site devices using endpoint/param fallbacks (now includes v3 endpoint priority) and enriches devices with port details.
-  - `get_device_port_details(...)`: fetches per-device port labels/IDs via `networks/devices/ports` using v3/v2/v1 fallback and payload retries.
-  - `_enrich_devices_with_port_details(...)`: merges port payload data into device records for downstream interface catalog building.
+  - `get_site_devices(...)`: reads site devices using endpoint/param fallbacks (now includes v3 endpoint priority).
   - `get_site_gateways(...)`: resolves gateway candidates from device payloads (v3/v2/v1 endpoint tries).
   - `create_lan_network(...)`: creates LAN with endpoint fallback (v3/v2/v1) plus request-field retries.
 
