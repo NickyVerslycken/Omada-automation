@@ -1,5 +1,5 @@
 Python-Omada-automation/ (with file line counts)
-  AGENTS.md (lines: 52)
+  AGENTS.md (lines: 51)
   README.md (lines: 124)
   requirements.txt (lines: 2)
   start-omada-app.pyw (lines: 8)
@@ -12,8 +12,8 @@ Python-Omada-automation/ (with file line counts)
   info/
     file_structure.txt (lines: 78)
     file_structure_with_loc.txt (lines: 141)
-    code_map_with_responsibilities.txt (lines: 144)
-    dependency_relations.txt (lines: 129)
+    code_map_with_responsibilities.txt (lines: 143)
+    dependency_relations.txt (lines: 128)
     Omada_SDN_Controller_V5.9.9 API Document.html (lines: 5349)
     controller-create-gateway-dhcp-lan.har (lines: 36332)
     controller-create-switch-dhcp-lan.har (lines: 36611)
@@ -35,7 +35,7 @@ Python-Omada-automation/ (with file line counts)
       profile_service.py (lines: 28)
     storage/
       __init__.py (lines: 0)
-      file_change_log.py (lines: 235)
+      file_change_log.py (lines: 205)
       profile_store.py (lines: 50)
     ui/
       __init__.py (lines: 0)
@@ -87,11 +87,11 @@ Line Count Ranking (High to Low)
 | 5 | `omada_batch/ui/controllers/connection_controller.py` | 375 |
 | 6 | `omada_batch/ui/controllers/networks_controller.py` | 300 |
 | 7 | `omada_batch/ui/shell/app_shell.py` | 265 |
-| 8 | `omada_batch/storage/file_change_log.py` | 235 |
+| 8 | `omada_batch/storage/file_change_log.py` | 205 |
 | 9 | `omada_batch/ui/controllers/batch_controller.py` | 157 |
-| 10 | `info/code_map_with_responsibilities.txt` | 144 |
+| 10 | `info/code_map_with_responsibilities.txt` | 143 |
 | 11 | `info/file_structure_with_loc.txt` | 141 |
-| 12 | `info/dependency_relations.txt` | 129 |
+| 12 | `info/dependency_relations.txt` | 128 |
 | 13 | `README.md` | 124 |
 | 14 | `omada_batch/services/device_service.py` | 113 |
 | 15 | `omada_batch/services/lan_service.py` | 108 |
@@ -101,7 +101,7 @@ Line Count Ranking (High to Low)
 | 19 | `info/file_structure.txt` | 78 |
 | 20 | `omada_batch/services/planner.py` | 71 |
 | 21 | `omada_batch/ui/tabs/current_networks_tab.py` | 54 |
-| 22 | `AGENTS.md` | 52 |
+| 22 | `AGENTS.md` | 51 |
 | 23 | `omada_batch/storage/profile_store.py` | 50 |
 | 24 | `tests/test_profile_store.py` | 37 |
 | 25 | `omada_batch/services/profile_service.py` | 28 |

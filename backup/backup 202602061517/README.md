@@ -30,7 +30,7 @@ Desktop GUI application to automate Omada SDN LAN/VLAN tasks with the Omada Open
 
 ```powershell
 # 1) Go to the project folder
-cd "Omada-automation"
+cd "C:\path\to\Omada-automation"
 
 # 2) Create and activate virtual environment
 py -3 -m venv .venv

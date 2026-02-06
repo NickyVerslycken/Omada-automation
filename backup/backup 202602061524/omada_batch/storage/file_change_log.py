@@ -45,29 +45,6 @@ def _normalize_details(details: dict[str, Any] | None) -> dict[str, Any] | None:
     return out
 
 
-def _relative_project_subpath(path: str) -> str:
-    rel = _to_project_relative_path(path)
-    prefix = f"{PROJECT_NAME}/"
-    if rel.startswith(prefix):
-        return rel[len(prefix) :]
-    return rel
-
-
-def _find_latest_backup_copy(path: str) -> str | None:
-    rel_subpath = _relative_project_subpath(path).strip("/")
-    if not rel_subpath:
-        return None
-    try:
-        entries = [d for d in os.listdir(BACKUP_DIR) if d.startswith("backup ") and os.path.isdir(os.path.join(BACKUP_DIR, d))]
-    except FileNotFoundError:
-        return None
-    for folder in sorted(entries, reverse=True):
-        candidate = os.path.join(BACKUP_DIR, folder, rel_subpath)
-        if os.path.exists(candidate):
-            return f"backup/{folder}/{rel_subpath}".replace("\\", "/")
-    return None
-
-
 def _rollback_instructions(action: str, target_path: str, details: dict[str, Any] | None) -> str:
     normalized_target = _to_project_relative_path(target_path)
     backup_path = ""
@@ -79,8 +56,8 @@ def _rollback_instructions(action: str, target_path: str, details: dict[str, Any
         return f"Rollback: remove created file '{normalized_target}'."
     if action in {"edited", "deleted"}:
         if backup_path:
-            return f"Rollback: restore '{normalized_target}' by copying '{backup_path}' over it."
-        return f"Rollback: restore '{normalized_target}' from a matching file in backup/backup YYYYMMDDHHmm/."
+            return f"Rollback: restore '{normalized_target}' from backup '{backup_path}'."
+        return f"Rollback: restore '{normalized_target}' from the latest backup copy under backup/backup YYYYMMDDHHmm/."
     if action == "moved":
         return f"Rollback: move file back to its original path (see details.source_path and details.destination_path)."
     return f"Rollback: inspect details and restore '{normalized_target}' from backup if needed."
@@ -96,13 +73,6 @@ def append_file_change_log(
     log_path = changelog_path or DEFAULT_CHANGELOG_PATH
     os.makedirs(os.path.dirname(log_path) or BACKUP_DIR, exist_ok=True)
     normalized_details = _normalize_details(details)
-    if action in {"edited", "deleted"}:
-        if not isinstance(normalized_details, dict):
-            normalized_details = {}
-        if not normalized_details.get("backup_path"):
-            latest_backup = _find_latest_backup_copy(target_path)
-            if latest_backup:
-                normalized_details["backup_path"] = latest_backup
     event: dict[str, Any] = {
         "timestamp": datetime.now().astimezone().isoformat(),
         "action": action,

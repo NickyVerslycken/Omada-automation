@@ -10,8 +10,6 @@ Entry points
   - Imports `main` from `runners.run_gui` and starts the GUI app.
 - `runners/run_gui.py`
   - `main()`: launches `App().mainloop()`.
-- `runners/sync_changelog_from_git.py`
-  - `main()`: appends changelog entries for current git worktree changes.
 
 Package: `omada_batch`
 
@@ -29,10 +27,7 @@ Package: `omada_batch`
   - `append_file_change_log(action, target_path, ...)`: appends JSONL file change events with timestamp, action, path, rollback instructions, and optional details.
   - `write_json_with_changelog(target_path, payload, ...)`: writes JSON and logs the change as `created` or `edited`.
   - `delete_file_with_changelog(target_path, ...)`: deletes a file and logs the change as `deleted`.
-  - `sync_git_worktree_to_changelog(...)`: scans `git status` and appends changelog entries for created/edited/deleted/moved files (with filters for backups/cache artifacts).
   - Default changelog location is `backup/file_changelog.jsonl`.
-  - Path values in changelog entries are normalized to `Omada-automation/...` format with forward slashes.
-  - For `edited`/`deleted` entries, rollback details include a concrete `details.backup_path` to a real timestamped backup file when available.
 
 - `omada_batch/storage/profile_store.py`
   - `ProfileStore`

@@ -32,7 +32,6 @@ Package: `omada_batch`
   - `sync_git_worktree_to_changelog(...)`: scans `git status` and appends changelog entries for created/edited/deleted/moved files (with filters for backups/cache artifacts).
   - Default changelog location is `backup/file_changelog.jsonl`.
   - Path values in changelog entries are normalized to `Omada-automation/...` format with forward slashes.
-  - For `edited`/`deleted` entries, rollback details include a concrete `details.backup_path` to a real timestamped backup file when available.
 
 - `omada_batch/storage/profile_store.py`
   - `ProfileStore`

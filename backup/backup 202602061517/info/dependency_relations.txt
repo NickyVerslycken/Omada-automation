@@ -85,8 +85,6 @@ Tests
 - centralizes JSONL logging to `backup/file_changelog.jsonl` by default.
 - includes per-entry rollback instructions to undo logged changes.
 - includes git-worktree synchronization helper to log file changes outside direct app write paths.
-- normalizes recorded paths to project-relative format (`Omada-automation/...`) with `/`.
-- resolves concrete timestamped backup file references for rollback metadata when available.
 
 `omada_batch/ui/tabs/*.py`
 - contains pure view-builder functions.

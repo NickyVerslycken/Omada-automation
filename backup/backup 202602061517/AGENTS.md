@@ -21,12 +21,9 @@
 - Required fields per changelog entry:
   - timestamp (local ISO-8601 with timezone offset),
   - action (`created`, `edited`, `deleted`, `moved`),
-  - project-relative path of the affected file in format `Omada-automation/...`,
-  - rollback instructions (clear and concrete steps to undo that specific change, with exact backup file path when a backup exists),
+  - absolute path of the affected file,
+  - rollback instructions (clear and concrete steps to undo that specific change),
   - details with practical context (source function/flow, counts, error context when relevant).
-- For `edited` and `deleted` actions, include `details.backup_path` with the exact timestamped backup file path, for example: `backup/backup 202602061522/README.md`.
-- Never store full machine/network absolute paths in changelogs or other project files.
-- Use forward slashes (`/`) in paths, never backslashes (`\` or `\\`).
 - For move/rename, log at least source and destination paths in details.
 - Changelog writes are required for every run, same as backups; do not skip logging for bulk operations.
 

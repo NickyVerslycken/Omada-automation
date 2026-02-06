@@ -11,79 +11,21 @@ from omada_batch.config import PROJECT_ROOT
 
 BACKUP_DIR = os.path.join(PROJECT_ROOT, "backup")
 DEFAULT_CHANGELOG_PATH = os.path.join(BACKUP_DIR, "file_changelog.jsonl")
-PROJECT_NAME = os.path.basename(os.path.normpath(PROJECT_ROOT))
-
-
-def _to_project_relative_path(path: str) -> str:
-    text = str(path or "").strip().replace("\\", "/")
-    if not text:
-        return f"{PROJECT_NAME}/"
-    if text.startswith(f"{PROJECT_NAME}/"):
-        return text
-    absolute = os.path.abspath(path) if os.path.isabs(path) else os.path.abspath(os.path.join(PROJECT_ROOT, path))
-    try:
-        rel = os.path.relpath(absolute, PROJECT_ROOT)
-    except ValueError:
-        return text
-    rel_norm = rel.replace("\\", "/")
-    if rel_norm.startswith("../"):
-        return text
-    return f"{PROJECT_NAME}/{rel_norm}"
-
-
-def _normalize_details(details: dict[str, Any] | None) -> dict[str, Any] | None:
-    if not isinstance(details, dict):
-        return details
-    out: dict[str, Any] = {}
-    for key, value in details.items():
-        if key in {"path", "source_path", "destination_path", "backup_path"} and isinstance(value, str):
-            out[key] = _to_project_relative_path(value)
-        elif isinstance(value, str):
-            out[key] = value.replace("\\", "/")
-        else:
-            out[key] = value
-    return out
-
-
-def _relative_project_subpath(path: str) -> str:
-    rel = _to_project_relative_path(path)
-    prefix = f"{PROJECT_NAME}/"
-    if rel.startswith(prefix):
-        return rel[len(prefix) :]
-    return rel
-
-
-def _find_latest_backup_copy(path: str) -> str | None:
-    rel_subpath = _relative_project_subpath(path).strip("/")
-    if not rel_subpath:
-        return None
-    try:
-        entries = [d for d in os.listdir(BACKUP_DIR) if d.startswith("backup ") and os.path.isdir(os.path.join(BACKUP_DIR, d))]
-    except FileNotFoundError:
-        return None
-    for folder in sorted(entries, reverse=True):
-        candidate = os.path.join(BACKUP_DIR, folder, rel_subpath)
-        if os.path.exists(candidate):
-            return f"backup/{folder}/{rel_subpath}".replace("\\", "/")
-    return None
 
 
 def _rollback_instructions(action: str, target_path: str, details: dict[str, Any] | None) -> str:
-    normalized_target = _to_project_relative_path(target_path)
     backup_path = ""
     if isinstance(details, dict):
         backup_path = str(details.get("backup_path") or "").strip()
-        if backup_path:
-            backup_path = _to_project_relative_path(backup_path)
     if action == "created":
-        return f"Rollback: remove created file '{normalized_target}'."
+        return f"Rollback: remove created file '{os.path.abspath(target_path)}'."
     if action in {"edited", "deleted"}:
         if backup_path:
-            return f"Rollback: restore '{normalized_target}' by copying '{backup_path}' over it."
-        return f"Rollback: restore '{normalized_target}' from a matching file in backup/backup YYYYMMDDHHmm/."
+            return f"Rollback: restore '{os.path.abspath(target_path)}' from backup '{backup_path}'."
+        return f"Rollback: restore '{os.path.abspath(target_path)}' from the latest backup copy under backup/backup YYYYMMDDHHmm/."
     if action == "moved":
         return f"Rollback: move file back to its original path (see details.source_path and details.destination_path)."
-    return f"Rollback: inspect details and restore '{normalized_target}' from backup if needed."
+    return f"Rollback: inspect details and restore '{os.path.abspath(target_path)}' from backup if needed."
 
 
 def append_file_change_log(
@@ -95,22 +37,14 @@ def append_file_change_log(
 ) -> None:
     log_path = changelog_path or DEFAULT_CHANGELOG_PATH
     os.makedirs(os.path.dirname(log_path) or BACKUP_DIR, exist_ok=True)
-    normalized_details = _normalize_details(details)
-    if action in {"edited", "deleted"}:
-        if not isinstance(normalized_details, dict):
-            normalized_details = {}
-        if not normalized_details.get("backup_path"):
-            latest_backup = _find_latest_backup_copy(target_path)
-            if latest_backup:
-                normalized_details["backup_path"] = latest_backup
     event: dict[str, Any] = {
         "timestamp": datetime.now().astimezone().isoformat(),
         "action": action,
-        "path": _to_project_relative_path(target_path),
-        "rollback": _rollback_instructions(action, target_path, normalized_details),
+        "path": os.path.abspath(target_path),
+        "rollback": _rollback_instructions(action, target_path, details),
     }
-    if normalized_details:
-        event["details"] = normalized_details
+    if details:
+        event["details"] = details
     with open(log_path, "a", encoding="utf-8") as f:
         f.write(json.dumps(event, ensure_ascii=False) + "\n")
 
@@ -207,8 +141,8 @@ def sync_git_worktree_to_changelog(
                 changelog_path=changelog_path,
                 details={
                     "source": "sync_git_worktree_to_changelog",
-                    "source_path": _to_project_relative_path(os.path.join(root, source_rel)),
-                    "destination_path": _to_project_relative_path(os.path.join(root, dest_rel)),
+                    "source_path": os.path.abspath(os.path.join(root, source_rel)),
+                    "destination_path": os.path.abspath(os.path.join(root, dest_rel)),
                     "git_status": status,
                 },
             )

@@ -71,7 +71,6 @@ Python-Omada-automation/
       validators.py
   runners/
     run_gui.py
-    sync_changelog_from_git.py
   tests/
     test_omada_client_parsing.py
     test_planner.py
