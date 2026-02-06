@@ -1,0 +1,117 @@
+﻿Dependency and relation map (files, classes, functions)
+=======================================================
+
+Legend
+- `A -> B`: A depends on / calls / uses B.
+- `uses`: direct import or invocation.
+- `contains`: file owns class/function.
+
+1) File-level dependency direction
+----------------------------------
+
+Runtime entry chain
+- `start-omada-app.pyw` -> `runners/run_gui.py` (uses `main`).
+- `runners/run_gui.py` -> `omada_batch/ui/main_window.py` (uses `App`).
+
+UI orchestration
+- `omada_batch/ui/main_window.py` -> `omada_batch/api/omada_client.py` (API client).
+- `omada_batch/ui/main_window.py` -> `omada_batch/services/planner.py` (plan generation).
+- `omada_batch/ui/main_window.py` -> `omada_batch/services/lan_service.py` (interface catalog from devices).
+- `omada_batch/ui/main_window.py` -> `omada_batch/services/device_service.py` (display names, catalog merge/extract).
+- `omada_batch/ui/main_window.py` -> `omada_batch/services/profile_service.py` (profile normalization).
+- `omada_batch/ui/main_window.py` -> `omada_batch/storage/profile_store.py` (profile persistence).
+- `omada_batch/ui/main_window.py` -> `omada_batch/ui/dialogs/interface_selector.py` (per-plan interface selection modal).
+- `omada_batch/ui/main_window.py` -> `omada_batch/models/lan.py` (type usage for `PlannedLan`).
+
+API and service/model dependencies
+- `omada_batch/api/omada_client.py` -> `omada_batch/models/lan.py` (`create_lan_network` consumes `PlannedLan`).
+- `omada_batch/services/planner.py` -> `omada_batch/models/lan.py` (creates `PlannedLan` objects).
+- `omada_batch/storage/profile_store.py` -> `omada_batch/config.py` (path constants).
+
+Adapter modules
+- `omada_batch/ui/app.py` -> `omada_batch/ui/main_window.py` (re-export/shim).
+
+Tests
+- `tests/test_planner.py` -> `omada_batch/services/planner.py`.
+- `tests/test_profile_store.py` -> `omada_batch/storage/profile_store.py`.
+- `tests/test_omada_client_parsing.py` -> `omada_batch/api/omada_client.py`.
+
+2) Class/function ownership and usage direction
+-----------------------------------------------
+
+`omada_batch/api/omada_client.py`
+- contains class `OmadaOpenApiClient`.
+- used by `App.on_connect()` to create the client.
+- methods used by UI workflows:
+- `get_controller_info`, `get_access_token_client_credentials`, `get_sites`, `get_site_devices`, `get_lan_networks`, `create_lan_network`.
+- internal method relation:
+- most public methods -> `_req`; auth-required ones -> `_auth_headers`.
+
+`omada_batch/services/planner.py`
+- contains `generate_plan`.
+- `App.on_generate_preview()` -> `generate_plan`.
+- output (`List[PlannedLan]`) flows to:
+- UI preview tree (`App.on_generate_preview`).
+- push execution loop (`App.on_push_plan` -> API `create_lan_network`).
+
+`omada_batch/services/lan_service.py`
+- contains `build_interface_catalog`.
+- `App.on_refresh_gateways()` -> `_build_interface_catalog()` -> `build_interface_catalog`.
+- output gateway/interface catalog flows to:
+- current-tab filter combo and batch-tab gateway combo (`App._on_gateways`).
+
+`omada_batch/services/device_service.py`
+- contains interface helper functions.
+- `App._interface_display_name()` -> `interface_display_name`.
+- `App._merge_interface_catalog_names()` -> `merge_interface_catalog_names`.
+- `App._get_interface_catalog_from_networks()` -> `extract_interface_catalog_from_networks`.
+- `App._prompt_interface_selection()` passes display callback using the same helpers.
+
+`omada_batch/services/profile_service.py`
+- contains `normalize_profile`.
+- `App._normalize_controller_profile()` -> `normalize_profile`.
+- used by profile load/import flows before writing UI state.
+
+`omada_batch/storage/profile_store.py`
+- contains class `ProfileStore`.
+- `App.__init__()` instantiates `ProfileStore`.
+- `App._load_controller_profiles()` -> `ProfileStore.load_raw`.
+- `App._save_controller_profiles()` -> `ProfileStore.save_raw`.
+
+`omada_batch/ui/dialogs/interface_selector.py`
+- contains `prompt_interface_selection`.
+- `App._prompt_interface_selection()` -> `prompt_interface_selection`.
+- output mapping (`plan index -> interface IDs`) flows to `App.on_push_plan` API calls.
+
+3) Core data flow direction (high level)
+----------------------------------------
+
+Connect and site load
+1. UI credentials (`App`) -> create `OmadaOpenApiClient`.
+2. Client calls `/api/info` and token endpoint.
+3. `App` requests sites -> fills site combo.
+
+Device/interface catalog
+1. Selected site -> `App.on_refresh_gateways`.
+2. API `get_site_devices` -> `build_interface_catalog`.
+3. Result stored in `App.gateways` and shown in both tabs.
+
+Current network listing
+1. `App.on_fetch_networks` -> API `get_lan_networks`.
+2. `App._apply_network_filter` filters by selected gateway using `_network_matches_gateway`.
+3. Tree + raw JSON panel updated.
+
+Batch plan and push
+1. User inputs -> `generate_plan` -> `List[PlannedLan]`.
+2. `App.on_push_plan` resolves interface IDs:
+- from gateway catalog and/or existing networks (`extract_interface_catalog_from_networks`).
+- optionally asks user via `prompt_interface_selection`.
+3. For each `PlannedLan`: `OmadaOpenApiClient.create_lan_network`.
+
+4) Dependency characteristics
+-----------------------------
+
+- Architectural center: `omada_batch/ui/main_window.py` is the orchestration hub.
+- Most modules are leaf helpers (services/models/storage/dialog) consumed by `App`.
+- `omada_batch/api/omada_client.py` is isolated behind UI calls and model type usage.
+- Tests are focused unit tests around planner/profile-store/client-init behavior.

@@ -1,0 +1,12 @@
+{
+  "profiles": [
+    {
+      "name": "NVhome-test-OC300",
+      "base_url": "https://192.168.6.101",
+      "client_id": "d61b1ff4d59841f984b0a5007349ce25",
+      "client_secret": "8aa40f00ae2f4dcab3153d9c720bacb7",
+      "verify_ssl": false,
+      "omada_id": "8d9e2b36384ff9a714d069d6226f3eca"
+    }
+  ]
+}

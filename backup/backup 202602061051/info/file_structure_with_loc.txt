@@ -1,0 +1,63 @@
+﻿Python-Omada-automation/ (with file line counts)
+  AGENTS.md (lines: 26)
+  README.md (lines: 10)
+  requirements.txt (lines: 1)
+  start-omada-app.pyw (lines: 5)
+  archive/
+  backup/
+  data/
+    controller_profiles.json (lines: 12)
+  exports/
+  info/
+    file_structure.txt (lines: 62)
+    file_structure_with_loc.txt (lines: 62)
+    code_map_with_responsibilities.txt (lines: 93)
+    dependency_relations.txt (lines: 95)
+    Omada_SDN_Controller_V5.9.9 API Document.html (lines: 5302)
+    controller-reate-network.har (lines: 36332)
+  omada_batch/
+    __init__.py (lines: 0)
+    config.py (lines: 7)
+    api/
+      __init__.py (lines: 0)
+      omada_client.py (lines: 362)
+    models/
+      __init__.py (lines: 0)
+      controller_profile.py (lines: 10)
+      lan.py (lines: 12)
+    services/
+      __init__.py (lines: 0)
+      device_service.py (lines: 96)
+      lan_service.py (lines: 97)
+      planner.py (lines: 57)
+      profile_service.py (lines: 23)
+    storage/
+      __init__.py (lines: 0)
+      profile_store.py (lines: 38)
+    ui/
+      __init__.py (lines: 0)
+      app.py (lines: 1)
+      background_tasks.py (lines: 2)
+      main_window.py (lines: 939)
+      state.py (lines: 2)
+      dialogs/
+        __init__.py (lines: 0)
+        interface_selector.py (lines: 85)
+      tabs/
+        __init__.py (lines: 0)
+        batch_tab.py (lines: 2)
+        connection_tab.py (lines: 2)
+        current_networks_tab.py (lines: 2)
+        logs_tab.py (lines: 2)
+    utils/
+      __init__.py (lines: 0)
+      formatters.py (lines: 2)
+      logging.py (lines: 2)
+      validators.py (lines: 2)
+  runners/
+    run_gui.py (lines: 6)
+  tests/
+    test_omada_client_parsing.py (lines: 4)
+    test_planner.py (lines: 15)
+    test_profile_store.py (lines: 10)
+
