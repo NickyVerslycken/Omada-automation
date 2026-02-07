@@ -8,7 +8,7 @@ Desktop GUI application to automate Omada SDN LAN/VLAN tasks with the Omada Open
 - Lists available sites.
 - Loads and filters current LAN networks.
 - Generates batch LAN/VLAN plans from an IP/VLAN range.
-- Pushes planned LAN networks to the selected site.
+- Pushes planned LAN networks to the selected site with the selected device as dhcp-server.
 - Saves, imports, exports, and removes controller connection profiles.
 - Exports network and plan JSON files.
 
@@ -21,7 +21,7 @@ Desktop GUI application to automate Omada SDN LAN/VLAN tasks with the Omada Open
   - `Client Secret`
   - Optional `omadacId` (auto-detected in many setups).
 - Environment file:
-  - Copy `data/.env.example` to `data/.env` and set credentials there.
+  - Copy `data/.env.example` to `data/.env` and set credentials there. Can be done by saving your configuration in the GUI of the application as well.
 - Python package dependencies (see `requirements.txt`):
   - `requests`
   - `tk` (note: `tkinter` is part of standard Python on many systems; Linux may need OS tkinter package).
@@ -97,6 +97,8 @@ Alternative launcher:
 python start-omada-app.pyw
 ```
 
+Or just double click on the start-omada-app.pyw file.
+
 ## Credentials in `data/.env`
 
 Profiles in `data/controller_profiles.json` store env variable names (`client_id_env`, `client_secret_env`, `omada_id_env`) instead of raw secrets.
@@ -117,7 +119,7 @@ Then set:
 1. Fill `data/.env` with credentials (or enter credentials once in the app and save profile to write `data/.env`).
 2. Open app and enter/select controller URL.
 3. Connect and select target site.
-4. Refresh DHCP servers / gateways.
+4. Refresh DHCP servers / gateways if needed.
 5. Fetch current networks (optional export from Current Networks tab).
 6. In Batch tab, generate preview from base network/VLAN parameters.
 7. Review plan and push to controller.
@@ -126,8 +128,11 @@ Then set:
 
 - Controller profiles are stored in `data/controller_profiles.json` (without raw credentials).
 - Runtime credentials are loaded from `data/.env`.
-- File-change audit log is stored in `backup/file_changelog.jsonl`.
-- Per-run backups are stored in `backup/backup YYYYMMDDHHmm/`.
+
+## Changes to software stack
+
+- File-change audit log is stored in `backup/file_changelog.jsonl` when changes are made to the software stack.
+- Backups are stored in `backup/backup YYYYMMDDHHmm/` when something is changed to the software stack.
 
 ## Troubleshooting
 
@@ -141,3 +146,4 @@ Then set:
 - API errors during push:
   - Check site selection and gateway selection.
   - Review the app Logs tab for detailed request/response fallback behavior.
+  - Enable Developer mode in the top right corner on the first screen to enable a tab that gives full json output of the api actions
