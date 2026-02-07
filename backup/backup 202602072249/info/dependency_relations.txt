@@ -24,7 +24,7 @@ UI composition split
 Controller dependencies
 - `connection_controller.py` -> `omada_batch/api/omada_client.py` (API client creation/use).
 - `connection_controller.py` -> `omada_batch/config.py` (env var key defaults and `data/.env` upsert helpers).
-- `connection_controller.py` -> `omada_batch/services/profile_service.py` (profile normalization + profile ID/env-key generation helpers).
+- `connection_controller.py` -> `omada_batch/services/profile_service.py` (profile normalization).
 - `connection_controller.py` -> `omada_batch/storage/file_change_log.py` (profile export JSON writes with changelog).
 - `networks_controller.py` -> `omada_batch/services/lan_service.py` (device/interface catalog building).
 - `networks_controller.py` -> `omada_batch/services/device_service.py` (display/merge/extract interface helpers).
@@ -36,7 +36,7 @@ Controller dependencies
 Service/model/storage dependencies
 - `omada_batch/api/omada_client.py` -> `omada_batch/models/lan.py` (`create_lan_network` input type).
 - `omada_batch/services/planner.py` -> `omada_batch/models/lan.py` (creates `PlannedLan`).
-- `omada_batch/services/profile_service.py` -> `omada_batch/config.py` (default env variable names and fallback behavior for profile credential references).
+- `omada_batch/services/profile_service.py` -> `omada_batch/config.py` (default env variable names for profile credential references).
 - `omada_batch/storage/profile_store.py` -> `omada_batch/config.py` (data paths).
 - `omada_batch/storage/profile_store.py` -> `omada_batch/storage/file_change_log.py` (changelog-aware profile persistence).
 - `omada_batch/storage/file_change_log.py` -> `omada_batch/config.py` (default changelog path under `backup/`).
@@ -70,7 +70,7 @@ Tests
 - contains class `ConnectionControllerMixin`.
 - handles profile CRUD/import/export, controller auth/session connect, site list and disconnect flow.
 - forwards API request/response JSON payloads into queue event type `devjson`.
-- writes profile credentials into `data/.env` via config helper using profile-ID-scoped env keys and stores only env-key references in profile JSON.
+- writes profile credentials into `data/.env` via config helper and stores only env-key references in profile JSON.
 - uses changelog-aware JSON writer when exporting controller profiles without raw secrets.
 
 `omada_batch/ui/controllers/networks_controller.py`

@@ -13,13 +13,7 @@ from omada_batch.config import (
     DEFAULT_OMADA_ID_ENV_VAR,
     upsert_env_file,
 )
-from omada_batch.services.profile_service import (
-    ensure_unique_profile_id,
-    normalize_profile,
-    normalize_profile_id,
-    profile_env_var_names,
-    suggest_profile_id,
-)
+from omada_batch.services.profile_service import normalize_profile
 from omada_batch.storage.file_change_log import write_json_with_changelog
 
 
@@ -39,25 +33,13 @@ class ConnectionControllerMixin:
         return normalize_profile(item, index=index)
 
     def _profile_for_storage(self, profile: Dict[str, Any]) -> Dict[str, Any]:
-        profile_id = normalize_profile_id(profile.get("id") or profile.get("profile_id") or "")
-        generated_keys = profile_env_var_names(profile_id) if profile_id else {}
         return {
-            "id": profile_id,
             "name": str(profile.get("name") or "").strip(),
             "base_url": str(profile.get("base_url") or "").strip(),
-            "client_id_env": str(
-                profile.get("client_id_env") or generated_keys.get("client_id_env") or DEFAULT_CLIENT_ID_ENV_VAR
-            ).strip()
-            or DEFAULT_CLIENT_ID_ENV_VAR,
-            "client_secret_env": str(
-                profile.get("client_secret_env")
-                or generated_keys.get("client_secret_env")
-                or DEFAULT_CLIENT_SECRET_ENV_VAR
-            ).strip()
-            or DEFAULT_CLIENT_SECRET_ENV_VAR,
+            "client_id_env": str(profile.get("client_id_env") or DEFAULT_CLIENT_ID_ENV_VAR).strip() or DEFAULT_CLIENT_ID_ENV_VAR,
+            "client_secret_env": str(profile.get("client_secret_env") or DEFAULT_CLIENT_SECRET_ENV_VAR).strip() or DEFAULT_CLIENT_SECRET_ENV_VAR,
             "verify_ssl": bool(profile.get("verify_ssl")),
-            "omada_id_env": str(profile.get("omada_id_env") or generated_keys.get("omada_id_env") or DEFAULT_OMADA_ID_ENV_VAR).strip()
-            or DEFAULT_OMADA_ID_ENV_VAR,
+            "omada_id_env": str(profile.get("omada_id_env") or DEFAULT_OMADA_ID_ENV_VAR).strip() or DEFAULT_OMADA_ID_ENV_VAR,
         }
 
     def _controller_host_key(self, base_url: str) -> str:
@@ -144,53 +126,12 @@ class ConnectionControllerMixin:
             messagebox.showwarning("Missing", "Profile name cannot be empty.")
             return
 
-        replace_idx = -1
-        for idx, cur in enumerate(self.controller_profiles):
-            pname = str(cur.get("name", "")).strip().lower()
-            phost = self._controller_host_key(str(cur.get("base_url") or ""))
-            if pname == name.lower() and phost == host_key:
-                replace_idx = idx
-                break
-
-        existing_profile = {}
-        if replace_idx >= 0:
-            existing_profile = self.controller_profiles[replace_idx]
-        elif selected_idx >= 0:
-            selected_profile = self.controller_profiles[selected_idx]
-            selected_host = self._controller_host_key(str(selected_profile.get("base_url") or ""))
-            if selected_host == host_key:
-                existing_profile = selected_profile
-
-        existing_ids = {
-            normalize_profile_id(cur.get("id") or cur.get("profile_id") or "")
-            for idx, cur in enumerate(self.controller_profiles)
-            if idx != replace_idx
-        }
-        existing_ids.discard("")
-        current_id = normalize_profile_id(existing_profile.get("id") or existing_profile.get("profile_id") or "")
-        desired_id = current_id or suggest_profile_id(name, base_url, index=len(self.controller_profiles))
-        profile_id = ensure_unique_profile_id(desired_id, existing_ids)
-        generated_keys = profile_env_var_names(profile_id)
-
-        stored_client_id_env = str(existing_profile.get("client_id_env") or "").strip()
-        stored_client_secret_env = str(existing_profile.get("client_secret_env") or "").strip()
-        stored_omada_id_env = str(existing_profile.get("omada_id_env") or "").strip()
-
-        client_id_env = (
-            generated_keys["client_id_env"]
-            if not stored_client_id_env or stored_client_id_env == DEFAULT_CLIENT_ID_ENV_VAR
-            else stored_client_id_env
-        )
+        selected_profile = self.controller_profiles[selected_idx] if selected_idx >= 0 else {}
+        client_id_env = str(selected_profile.get("client_id_env") or DEFAULT_CLIENT_ID_ENV_VAR).strip() or DEFAULT_CLIENT_ID_ENV_VAR
         client_secret_env = (
-            generated_keys["client_secret_env"]
-            if not stored_client_secret_env or stored_client_secret_env == DEFAULT_CLIENT_SECRET_ENV_VAR
-            else stored_client_secret_env
+            str(selected_profile.get("client_secret_env") or DEFAULT_CLIENT_SECRET_ENV_VAR).strip() or DEFAULT_CLIENT_SECRET_ENV_VAR
         )
-        omada_id_env = (
-            generated_keys["omada_id_env"]
-            if not stored_omada_id_env or stored_omada_id_env == DEFAULT_OMADA_ID_ENV_VAR
-            else stored_omada_id_env
-        )
+        omada_id_env = str(selected_profile.get("omada_id_env") or DEFAULT_OMADA_ID_ENV_VAR).strip() or DEFAULT_OMADA_ID_ENV_VAR
 
         env_updates = {
             client_id_env: client_id,
@@ -201,7 +142,6 @@ class ConnectionControllerMixin:
         upsert_env_file(env_updates)
 
         profile = {
-            "id": profile_id,
             "name": name,
             "base_url": base_url,
             "client_id_env": client_id_env,
@@ -213,6 +153,14 @@ class ConnectionControllerMixin:
             "omada_id": omada_id,
         }
 
+        replace_idx = -1
+        for idx, cur in enumerate(self.controller_profiles):
+            pname = str(cur.get("name", "")).strip().lower()
+            phost = self._controller_host_key(str(cur.get("base_url") or ""))
+            if pname == name.lower() and phost == host_key:
+                replace_idx = idx
+                break
+
         if replace_idx >= 0:
             self.controller_profiles[replace_idx] = profile
         else:
@@ -221,17 +169,12 @@ class ConnectionControllerMixin:
         self._save_controller_profiles()
         self._refresh_controller_profile_combo()
         for idx, cur in enumerate(self.controller_profiles):
-            pid = normalize_profile_id(cur.get("id") or cur.get("profile_id") or "")
+            pname = str(cur.get("name", "")).strip().lower()
             phost = self._controller_host_key(str(cur.get("base_url") or ""))
-            if pid == profile_id and phost == host_key:
+            if pname == name.lower() and phost == host_key:
                 self.cmb_controller_profiles.current(idx)
                 break
-        self._q.put(
-            (
-                "log",
-                f"Profile saved: {name} (id={profile_id}; credentials in .env via {client_id_env}/{client_secret_env})",
-            )
-        )
+        self._q.put(("log", f"Profile saved: {name} (credentials stored in .env via {client_id_env}/{client_secret_env})"))
 
     def on_remove_controller_profile(self) -> None:
         idx = self._selected_controller_profile_index()

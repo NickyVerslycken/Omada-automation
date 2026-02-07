@@ -1,7 +1,6 @@
-from omada_batch.services.profile_service import (
-    ensure_unique_profile_id,
-    normalize_profile,
-)
+import os
+
+from omada_batch.services.profile_service import normalize_profile
 
 
 def test_normalize_profile_resolves_env_credentials(monkeypatch):
@@ -43,31 +42,3 @@ def test_normalize_profile_keeps_legacy_credentials_without_env(monkeypatch):
     assert profile["client_secret"] == "legacy-secret"
     assert profile["client_id_env"] == "OMADA_CLIENT_ID"
     assert profile["client_secret_env"] == "OMADA_CLIENT_SECRET"
-
-
-def test_normalize_profile_uses_profile_id_based_env_keys(monkeypatch):
-    monkeypatch.setenv("OMADA_PROFILE_LAB_OC300_CLIENT_ID", "lab-id")
-    monkeypatch.setenv("OMADA_PROFILE_LAB_OC300_CLIENT_SECRET", "lab-secret")
-    monkeypatch.setenv("OMADA_PROFILE_LAB_OC300_OMADAC_ID", "lab-omada")
-
-    profile = normalize_profile(
-        {
-            "id": "lab-oc300",
-            "name": "lab",
-            "base_url": "https://192.168.1.99",
-        }
-    )
-
-    assert profile is not None
-    assert profile["id"] == "lab_oc300"
-    assert profile["client_id_env"] == "OMADA_PROFILE_LAB_OC300_CLIENT_ID"
-    assert profile["client_secret_env"] == "OMADA_PROFILE_LAB_OC300_CLIENT_SECRET"
-    assert profile["omada_id_env"] == "OMADA_PROFILE_LAB_OC300_OMADAC_ID"
-    assert profile["client_id"] == "lab-id"
-    assert profile["client_secret"] == "lab-secret"
-    assert profile["omada_id"] == "lab-omada"
-
-
-def test_ensure_unique_profile_id_appends_suffix():
-    profile_id = ensure_unique_profile_id("home_controller", ["home_controller", "other", "home_controller_2"])
-    assert profile_id == "home_controller_3"
