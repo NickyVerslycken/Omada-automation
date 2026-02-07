@@ -23,7 +23,7 @@ UI composition split
 
 Controller dependencies
 - `connection_controller.py` -> `omada_batch/api/omada_client.py` (API client creation/use).
-- `connection_controller.py` -> `omada_batch/config.py` (env var key defaults and `data/.env` upsert helpers).
+- `connection_controller.py` -> `omada_batch/config.py` (env var key defaults and `.env` upsert helpers).
 - `connection_controller.py` -> `omada_batch/services/profile_service.py` (profile normalization).
 - `connection_controller.py` -> `omada_batch/storage/file_change_log.py` (profile export JSON writes with changelog).
 - `networks_controller.py` -> `omada_batch/services/lan_service.py` (device/interface catalog building).
@@ -70,7 +70,7 @@ Tests
 - contains class `ConnectionControllerMixin`.
 - handles profile CRUD/import/export, controller auth/session connect, site list and disconnect flow.
 - forwards API request/response JSON payloads into queue event type `devjson`.
-- writes profile credentials into `data/.env` via config helper and stores only env-key references in profile JSON.
+- writes profile credentials into `.env` via config helper and stores only env-key references in profile JSON.
 - uses changelog-aware JSON writer when exporting controller profiles without raw secrets.
 
 `omada_batch/ui/controllers/networks_controller.py`
@@ -107,7 +107,7 @@ Tests
 - contain pure-ish domain helpers invoked from controllers.
 
 `omada_batch/config.py`
-- provides `data/.env` parsing and update utilities used by profile normalization/save workflows.
+- provides `.env` parsing and update utilities used by profile normalization/save workflows.
 
 3) Core data-flow direction
 ---------------------------

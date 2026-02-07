@@ -17,9 +17,9 @@ Package: `omada_batch`
 
 - `omada_batch/config.py`
   - Constants plus env helpers.
-  - Purpose: central file path config for data/profile storage and `data/.env` loading/upserts.
-  - `load_env_file(...)`: parses `data/.env` and injects keys into process env.
-  - `upsert_env_file(...)`: creates/updates key-value pairs in `data/.env`.
+  - Purpose: central file path config for data/profile storage and `.env` loading/upserts.
+  - `load_env_file(...)`: parses `.env` and injects keys into process env.
+  - `upsert_env_file(...)`: creates/updates key-value pairs in `.env`.
 
 - `omada_batch/models/controller_profile.py`
   - `ControllerProfile` (dataclass): typed controller profile record.
@@ -87,7 +87,7 @@ UI package split
 - `omada_batch/ui/controllers/connection_controller.py`
   - `ConnectionControllerMixin`: profile CRUD/import/export and controller connect/disconnect/site workflows.
   - Connect flow now wires API raw JSON events into UI queue via `("devjson", payload)`.
-  - Save flow writes credentials to `data/.env` and persists only env variable key references in profile JSON.
+  - Save flow writes credentials to `.env` and persists only env variable key references in profile JSON.
   - Export flow writes profile JSON through changelog-aware storage helper without raw credentials.
 
 - `omada_batch/ui/controllers/networks_controller.py`

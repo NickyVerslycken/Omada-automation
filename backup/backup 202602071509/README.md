@@ -20,8 +20,6 @@ Desktop GUI application to automate Omada SDN LAN/VLAN tasks with the Omada Open
   - `Client ID`
   - `Client Secret`
   - Optional `omadacId` (auto-detected in many setups).
-- Environment file:
-  - Copy `data/.env.example` to `data/.env` and set credentials there.
 - Python package dependencies (see `requirements.txt`):
   - `requests`
   - `tk` (note: `tkinter` is part of standard Python on many systems; Linux may need OS tkinter package).
@@ -97,35 +95,18 @@ Alternative launcher:
 python start-omada-app.pyw
 ```
 
-## Credentials in `data/.env`
-
-Profiles in `data/controller_profiles.json` store env variable names (`client_id_env`, `client_secret_env`, `omada_id_env`) instead of raw secrets.
-
-Use `data/.env.example` as template:
-
-```bash
-cp data/.env.example data/.env
-```
-
-Then set:
-- `OMADA_CLIENT_ID`
-- `OMADA_CLIENT_SECRET`
-- Optional `OMADA_OMADAC_ID`
-
 ## Typical workflow
 
-1. Fill `data/.env` with credentials (or enter credentials once in the app and save profile to write `data/.env`).
-2. Open app and enter/select controller URL.
-3. Connect and select target site.
-4. Refresh DHCP servers / gateways.
-5. Fetch current networks (optional export from Current Networks tab).
-6. In Batch tab, generate preview from base network/VLAN parameters.
-7. Review plan and push to controller.
+1. Open app and enter controller URL + API credentials.
+2. Connect and select target site.
+3. Refresh DHCP servers / gateways.
+4. Fetch current networks (optional export from Current Networks tab).
+5. In Batch tab, generate preview from base network/VLAN parameters.
+6. Review plan and push to controller.
 
 ## Data and logs
 
-- Controller profiles are stored in `data/controller_profiles.json` (without raw credentials).
-- Runtime credentials are loaded from `data/.env`.
+- Controller profiles are stored in `data/controller_profiles.json`.
 - File-change audit log is stored in `backup/file_changelog.jsonl`.
 - Per-run backups are stored in `backup/backup YYYYMMDDHHmm/`.
 

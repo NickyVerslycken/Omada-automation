@@ -9,7 +9,7 @@ PROJECT_ROOT = os.path.dirname(PACKAGE_DIR)
 DATA_DIR = os.path.join(PROJECT_ROOT, "data")
 DEFAULT_PROFILE_PATH = os.path.join(DATA_DIR, "controller_profiles.json")
 LEGACY_PROFILE_PATH = os.path.join(PROJECT_ROOT, "controller_profiles.json")
-ENV_FILE_PATH = os.path.join(DATA_DIR, ".env")
+ENV_FILE_PATH = os.path.join(PROJECT_ROOT, ".env")
 
 DEFAULT_CLIENT_ID_ENV_VAR = "OMADA_CLIENT_ID"
 DEFAULT_CLIENT_SECRET_ENV_VAR = "OMADA_CLIENT_SECRET"

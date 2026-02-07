@@ -7,12 +7,6 @@ from typing import Any, Dict, Optional
 from tkinter import filedialog, messagebox, simpledialog
 
 from omada_batch.api.omada_client import OmadaOpenApiClient
-from omada_batch.config import (
-    DEFAULT_CLIENT_ID_ENV_VAR,
-    DEFAULT_CLIENT_SECRET_ENV_VAR,
-    DEFAULT_OMADA_ID_ENV_VAR,
-    upsert_env_file,
-)
 from omada_batch.services.profile_service import normalize_profile
 from omada_batch.storage.file_change_log import write_json_with_changelog
 
@@ -27,20 +21,10 @@ class ConnectionControllerMixin:
                 self.controller_profiles.append(prof)
 
     def _save_controller_profiles(self) -> None:
-        self.profile_store.save_raw([self._profile_for_storage(profile) for profile in self.controller_profiles])
+        self.profile_store.save_raw(self.controller_profiles)
 
     def _normalize_controller_profile(self, item: Any, index: int = 0) -> Optional[Dict[str, Any]]:
         return normalize_profile(item, index=index)
-
-    def _profile_for_storage(self, profile: Dict[str, Any]) -> Dict[str, Any]:
-        return {
-            "name": str(profile.get("name") or "").strip(),
-            "base_url": str(profile.get("base_url") or "").strip(),
-            "client_id_env": str(profile.get("client_id_env") or DEFAULT_CLIENT_ID_ENV_VAR).strip() or DEFAULT_CLIENT_ID_ENV_VAR,
-            "client_secret_env": str(profile.get("client_secret_env") or DEFAULT_CLIENT_SECRET_ENV_VAR).strip() or DEFAULT_CLIENT_SECRET_ENV_VAR,
-            "verify_ssl": bool(profile.get("verify_ssl")),
-            "omada_id_env": str(profile.get("omada_id_env") or DEFAULT_OMADA_ID_ENV_VAR).strip() or DEFAULT_OMADA_ID_ENV_VAR,
-        }
 
     def _controller_host_key(self, base_url: str) -> str:
         text = str(base_url or "").strip()
@@ -126,30 +110,12 @@ class ConnectionControllerMixin:
             messagebox.showwarning("Missing", "Profile name cannot be empty.")
             return
 
-        selected_profile = self.controller_profiles[selected_idx] if selected_idx >= 0 else {}
-        client_id_env = str(selected_profile.get("client_id_env") or DEFAULT_CLIENT_ID_ENV_VAR).strip() or DEFAULT_CLIENT_ID_ENV_VAR
-        client_secret_env = (
-            str(selected_profile.get("client_secret_env") or DEFAULT_CLIENT_SECRET_ENV_VAR).strip() or DEFAULT_CLIENT_SECRET_ENV_VAR
-        )
-        omada_id_env = str(selected_profile.get("omada_id_env") or DEFAULT_OMADA_ID_ENV_VAR).strip() or DEFAULT_OMADA_ID_ENV_VAR
-
-        env_updates = {
-            client_id_env: client_id,
-            client_secret_env: client_secret,
-        }
-        if omada_id:
-            env_updates[omada_id_env] = omada_id
-        upsert_env_file(env_updates)
-
         profile = {
             "name": name,
             "base_url": base_url,
-            "client_id_env": client_id_env,
-            "client_secret_env": client_secret_env,
-            "verify_ssl": verify_ssl,
-            "omada_id_env": omada_id_env,
             "client_id": client_id,
             "client_secret": client_secret,
+            "verify_ssl": verify_ssl,
             "omada_id": omada_id,
         }
 
@@ -174,7 +140,7 @@ class ConnectionControllerMixin:
             if pname == name.lower() and phost == host_key:
                 self.cmb_controller_profiles.current(idx)
                 break
-        self._q.put(("log", f"Profile saved: {name} (credentials stored in .env via {client_id_env}/{client_secret_env})"))
+        self._q.put(("log", f"Profile saved: {name}"))
 
     def on_remove_controller_profile(self) -> None:
         idx = self._selected_controller_profile_index()
@@ -253,7 +219,7 @@ class ConnectionControllerMixin:
             return
         write_json_with_changelog(
             path,
-            {"profiles": [self._profile_for_storage(profile) for profile in self.controller_profiles]},
+            {"profiles": self.controller_profiles},
             details={"source": "ConnectionControllerMixin.on_export_controller_profiles", "record_count": len(self.controller_profiles)},
         )
         self._q.put(("log", f"Exported {len(self.controller_profiles)} profile(s) to {path}"))

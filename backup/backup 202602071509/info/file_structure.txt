@@ -7,8 +7,6 @@ Python-Omada-automation/
   backup/
     file_changelog.jsonl
   data/
-    .env
-    .env.example
     controller_profiles.json
   exports/
   info/
@@ -77,5 +75,4 @@ Python-Omada-automation/
   tests/
     test_omada_client_parsing.py
     test_planner.py
-    test_profile_service.py
     test_profile_store.py

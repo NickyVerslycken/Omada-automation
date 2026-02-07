@@ -1,4 +1,5 @@
 Python-Omada-automation/
+  .env.example
   AGENTS.md
   README.md
   requirements.txt
@@ -8,7 +9,6 @@ Python-Omada-automation/
     file_changelog.jsonl
   data/
     .env
-    .env.example
     controller_profiles.json
   exports/
   info/
