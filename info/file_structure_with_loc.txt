@@ -1,11 +1,11 @@
 Python-Omada-automation/ (with file line counts)
   AGENTS.md (lines: 52)
-  README.md (lines: 143)
+  README.md (lines: 149)
   requirements.txt (lines: 2)
   start-omada-app.pyw (lines: 8)
   archive/
   backup/
-    file_changelog.jsonl (lines: 45)
+    file_changelog.jsonl (lines: 52)
   data/
     .env (lines: 3)
     .env.example (lines: 5)
@@ -93,8 +93,8 @@ Line Count Ranking (High to Low)
 | 8 | `omada_batch/storage/file_change_log.py` | 235 |
 | 9 | `omada_batch/ui/controllers/batch_controller.py` | 157 |
 | 10 | `info/code_map_with_responsibilities.txt` | 152 |
-| 11 | `info/file_structure_with_loc.txt` | 147 |
-| 12 | `README.md` | 143 |
+| 11 | `README.md` | 149 |
+| 12 | `info/file_structure_with_loc.txt` | 147 |
 | 13 | `omada_batch/services/device_service.py` | 139 |
 | 14 | `info/dependency_relations.txt` | 137 |
 | 15 | `omada_batch/services/lan_service.py` | 109 |
@@ -106,9 +106,9 @@ Line Count Ranking (High to Low)
 | 21 | `omada_batch/services/planner.py` | 71 |
 | 22 | `omada_batch/ui/tabs/current_networks_tab.py` | 54 |
 | 23 | `AGENTS.md` | 52 |
-| 24 | `omada_batch/services/profile_service.py` | 51 |
-| 25 | `omada_batch/storage/profile_store.py` | 50 |
-| 26 | `backup/file_changelog.jsonl` | 45 |
+| 24 | `backup/file_changelog.jsonl` | 52 |
+| 25 | `omada_batch/services/profile_service.py` | 51 |
+| 26 | `omada_batch/storage/profile_store.py` | 50 |
 | 27 | `tests/test_profile_service.py` | 44 |
 | 28 | `tests/test_omada_client_parsing.py` | 40 |
 | 29 | `tests/test_profile_store.py` | 37 |
