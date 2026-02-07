@@ -43,11 +43,7 @@ Package: `omada_batch`
   - `save_raw(profiles)`: writes canonical profile JSON via changelog-aware writer.
 
 - `omada_batch/services/profile_service.py`
-  - `normalize_profile_id(...)`: sanitizes profile IDs for stable JSON/env-key usage.
-  - `suggest_profile_id(...)`: derives profile ID seed from profile name/base URL.
-  - `ensure_unique_profile_id(...)`: prevents ID collisions by suffixing (`_2`, `_3`, ...).
-  - `profile_env_var_names(profile_id)`: builds per-profile env key names (`OMADA_PROFILE_<ID>_*`).
-  - `normalize_profile(item, index=0)`: canonicalizes profile keys, resolves credentials from env var references (including ID-based defaults), and preserves legacy plaintext compatibility.
+  - `normalize_profile(item, index=0)`: canonicalizes profile keys, resolves credentials from env var references, and preserves legacy plaintext compatibility.
 
 - `omada_batch/services/planner.py`
   - `generate_plan(...)`: validates parameters and builds `PlannedLan` list + warnings.
@@ -91,7 +87,7 @@ UI package split
 - `omada_batch/ui/controllers/connection_controller.py`
   - `ConnectionControllerMixin`: profile CRUD/import/export and controller connect/disconnect/site workflows.
   - Connect flow now wires API raw JSON events into UI queue via `("devjson", payload)`.
-  - Save flow assigns/keeps stable profile IDs, writes credentials to `data/.env` under per-profile env keys, and persists only env variable key references in profile JSON.
+  - Save flow writes credentials to `data/.env` and persists only env variable key references in profile JSON.
   - Export flow writes profile JSON through changelog-aware storage helper without raw credentials.
 
 - `omada_batch/ui/controllers/networks_controller.py`
@@ -154,5 +150,3 @@ Tests
 - `tests/test_profile_service.py`
   - `test_normalize_profile_resolves_env_credentials()`: env-backed credential resolution.
   - `test_normalize_profile_keeps_legacy_credentials_without_env()`: legacy plaintext compatibility behavior.
-  - `test_normalize_profile_uses_profile_id_based_env_keys()`: ID-derived env key resolution behavior.
-  - `test_ensure_unique_profile_id_appends_suffix()`: profile ID collision handling.

@@ -5,16 +5,16 @@ Python-Omada-automation/ (with file line counts)
   start-omada-app.pyw (lines: 8)
   archive/
   backup/
-    file_changelog.jsonl (lines: 58)
+    file_changelog.jsonl (lines: 52)
   data/
     .env (lines: 3)
     .env.example (lines: 5)
-    controller_profiles.json (lines: 20)
+    controller_profiles.json (lines: 12)
   exports/
   info/
     file_structure.txt (lines: 81)
     file_structure_with_loc.txt (lines: 147)
-    code_map_with_responsibilities.txt (lines: 158)
+    code_map_with_responsibilities.txt (lines: 152)
     dependency_relations.txt (lines: 137)
     Omada_SDN_Controller_V5.9.9 API Document.html (lines: 5349)
     controller-create-gateway-dhcp-lan.har (lines: 36332)
@@ -34,7 +34,7 @@ Python-Omada-automation/ (with file line counts)
       device_service.py (lines: 139)
       lan_service.py (lines: 109)
       planner.py (lines: 71)
-      profile_service.py (lines: 114)
+      profile_service.py (lines: 51)
     storage/
       __init__.py (lines: 0)
       file_change_log.py (lines: 235)
@@ -48,7 +48,7 @@ Python-Omada-automation/ (with file line counts)
       controllers/
         __init__.py (lines: 11)
         batch_controller.py (lines: 157)
-        connection_controller.py (lines: 466)
+        connection_controller.py (lines: 409)
         networks_controller.py (lines: 300)
       shell/
         __init__.py (lines: 5)
@@ -77,7 +77,7 @@ Python-Omada-automation/ (with file line counts)
   tests/
     test_omada_client_parsing.py (lines: 40)
     test_planner.py (lines: 17)
-    test_profile_service.py (lines: 73)
+    test_profile_service.py (lines: 44)
     test_profile_store.py (lines: 37)
 
 Line Count Ranking (High to Low)
@@ -87,39 +87,39 @@ Line Count Ranking (High to Low)
 | 2 | `info/controller-create-gateway-dhcp-lan.har` | 36332 |
 | 3 | `info/Omada_SDN_Controller_V5.9.9 API Document.html` | 5349 |
 | 4 | `omada_batch/api/omada_client.py` | 666 |
-| 5 | `omada_batch/ui/controllers/connection_controller.py` | 466 |
+| 5 | `omada_batch/ui/controllers/connection_controller.py` | 409 |
 | 6 | `omada_batch/ui/controllers/networks_controller.py` | 300 |
 | 7 | `omada_batch/ui/shell/app_shell.py` | 265 |
 | 8 | `omada_batch/storage/file_change_log.py` | 235 |
-| 9 | `info/code_map_with_responsibilities.txt` | 158 |
-| 10 | `omada_batch/ui/controllers/batch_controller.py` | 157 |
+| 9 | `omada_batch/ui/controllers/batch_controller.py` | 157 |
+| 10 | `info/code_map_with_responsibilities.txt` | 152 |
 | 11 | `README.md` | 149 |
 | 12 | `info/file_structure_with_loc.txt` | 147 |
 | 13 | `omada_batch/services/device_service.py` | 139 |
 | 14 | `info/dependency_relations.txt` | 137 |
-| 15 | `omada_batch/services/profile_service.py` | 114 |
-| 16 | `omada_batch/services/lan_service.py` | 109 |
-| 17 | `omada_batch/ui/dialogs/interface_selector.py` | 108 |
-| 18 | `omada_batch/config.py` | 91 |
-| 19 | `omada_batch/ui/tabs/batch_tab.py` | 91 |
-| 20 | `omada_batch/ui/tabs/connection_tab.py` | 83 |
-| 21 | `info/file_structure.txt` | 81 |
-| 22 | `tests/test_profile_service.py` | 73 |
-| 23 | `omada_batch/services/planner.py` | 71 |
-| 24 | `backup/file_changelog.jsonl` | 58 |
-| 25 | `omada_batch/ui/tabs/current_networks_tab.py` | 54 |
-| 26 | `AGENTS.md` | 52 |
-| 27 | `omada_batch/storage/profile_store.py` | 50 |
+| 15 | `omada_batch/services/lan_service.py` | 109 |
+| 16 | `omada_batch/ui/dialogs/interface_selector.py` | 108 |
+| 17 | `omada_batch/config.py` | 91 |
+| 18 | `omada_batch/ui/tabs/batch_tab.py` | 91 |
+| 19 | `omada_batch/ui/tabs/connection_tab.py` | 83 |
+| 20 | `info/file_structure.txt` | 81 |
+| 21 | `omada_batch/services/planner.py` | 71 |
+| 22 | `omada_batch/ui/tabs/current_networks_tab.py` | 54 |
+| 23 | `AGENTS.md` | 52 |
+| 24 | `backup/file_changelog.jsonl` | 52 |
+| 25 | `omada_batch/services/profile_service.py` | 51 |
+| 26 | `omada_batch/storage/profile_store.py` | 50 |
+| 27 | `tests/test_profile_service.py` | 44 |
 | 28 | `tests/test_omada_client_parsing.py` | 40 |
 | 29 | `tests/test_profile_store.py` | 37 |
 | 30 | `omada_batch/ui/tabs/logs_tab.py` | 26 |
 | 31 | `omada_batch/ui/tabs/developer_tab.py` | 25 |
 | 32 | `omada_batch/ui/state/app_state.py` | 24 |
-| 33 | `data/controller_profiles.json` | 20 |
-| 34 | `tests/test_planner.py` | 17 |
-| 35 | `omada_batch/models/lan.py` | 15 |
-| 36 | `omada_batch/ui/tabs/__init__.py` | 15 |
-| 37 | `omada_batch/models/controller_profile.py` | 13 |
+| 33 | `tests/test_planner.py` | 17 |
+| 34 | `omada_batch/models/lan.py` | 15 |
+| 35 | `omada_batch/ui/tabs/__init__.py` | 15 |
+| 36 | `omada_batch/models/controller_profile.py` | 13 |
+| 37 | `data/controller_profiles.json` | 12 |
 | 38 | `runners/sync_changelog_from_git.py` | 12 |
 | 39 | `omada_batch/ui/controllers/__init__.py` | 11 |
 | 40 | `runners/run_gui.py` | 11 |
