@@ -1,14 +1,14 @@
 Python-Omada-automation/ (with file line counts)
+  .env.example (lines: 5)
   AGENTS.md (lines: 52)
   README.md (lines: 143)
   requirements.txt (lines: 2)
   start-omada-app.pyw (lines: 8)
   archive/
   backup/
-    file_changelog.jsonl (lines: 45)
+    file_changelog.jsonl (lines: 36)
   data/
     .env (lines: 3)
-    .env.example (lines: 5)
     controller_profiles.json (lines: 12)
   exports/
   info/
@@ -108,10 +108,10 @@ Line Count Ranking (High to Low)
 | 23 | `AGENTS.md` | 52 |
 | 24 | `omada_batch/services/profile_service.py` | 51 |
 | 25 | `omada_batch/storage/profile_store.py` | 50 |
-| 26 | `backup/file_changelog.jsonl` | 45 |
-| 27 | `tests/test_profile_service.py` | 44 |
-| 28 | `tests/test_omada_client_parsing.py` | 40 |
-| 29 | `tests/test_profile_store.py` | 37 |
+| 26 | `tests/test_profile_service.py` | 44 |
+| 27 | `tests/test_omada_client_parsing.py` | 40 |
+| 28 | `tests/test_profile_store.py` | 37 |
+| 29 | `backup/file_changelog.jsonl` | 36 |
 | 30 | `omada_batch/ui/tabs/logs_tab.py` | 26 |
 | 31 | `omada_batch/ui/tabs/developer_tab.py` | 25 |
 | 32 | `omada_batch/ui/state/app_state.py` | 24 |
@@ -124,7 +124,7 @@ Line Count Ranking (High to Low)
 | 39 | `omada_batch/ui/controllers/__init__.py` | 11 |
 | 40 | `runners/run_gui.py` | 11 |
 | 41 | `start-omada-app.pyw` | 8 |
-| 42 | `data/.env.example` | 5 |
+| 42 | `.env.example` | 5 |
 | 43 | `omada_batch/ui/main_window.py` | 5 |
 | 44 | `omada_batch/ui/shell/__init__.py` | 5 |
 | 45 | `omada_batch/ui/state/__init__.py` | 5 |

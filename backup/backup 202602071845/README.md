@@ -21,7 +21,7 @@ Desktop GUI application to automate Omada SDN LAN/VLAN tasks with the Omada Open
   - `Client Secret`
   - Optional `omadacId` (auto-detected in many setups).
 - Environment file:
-  - Copy `data/.env.example` to `data/.env` and set credentials there.
+  - Copy `.env.example` to `data/.env` and set credentials there.
 - Python package dependencies (see `requirements.txt`):
   - `requests`
   - `tk` (note: `tkinter` is part of standard Python on many systems; Linux may need OS tkinter package).
@@ -101,10 +101,10 @@ python start-omada-app.pyw
 
 Profiles in `data/controller_profiles.json` store env variable names (`client_id_env`, `client_secret_env`, `omada_id_env`) instead of raw secrets.
 
-Use `data/.env.example` as template:
+Use `.env.example` as template:
 
 ```bash
-cp data/.env.example data/.env
+cp .env.example data/.env
 ```
 
 Then set:

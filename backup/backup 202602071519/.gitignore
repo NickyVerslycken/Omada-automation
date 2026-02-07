@@ -1,6 +1,6 @@
 # keep folders but ignore their contents
 data/controller_profiles.json
-data/.env
+.env
 !data/.gitkeep
 
 archive/

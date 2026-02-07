@@ -21,7 +21,7 @@ Desktop GUI application to automate Omada SDN LAN/VLAN tasks with the Omada Open
   - `Client Secret`
   - Optional `omadacId` (auto-detected in many setups).
 - Environment file:
-  - Copy `data/.env.example` to `data/.env` and set credentials there.
+  - Copy `.env.example` to `.env` and set credentials there.
 - Python package dependencies (see `requirements.txt`):
   - `requests`
   - `tk` (note: `tkinter` is part of standard Python on many systems; Linux may need OS tkinter package).
@@ -97,14 +97,14 @@ Alternative launcher:
 python start-omada-app.pyw
 ```
 
-## Credentials in `data/.env`
+## Credentials in `.env`
 
 Profiles in `data/controller_profiles.json` store env variable names (`client_id_env`, `client_secret_env`, `omada_id_env`) instead of raw secrets.
 
-Use `data/.env.example` as template:
+Use `.env.example` as template:
 
 ```bash
-cp data/.env.example data/.env
+cp .env.example .env
 ```
 
 Then set:
@@ -114,7 +114,7 @@ Then set:
 
 ## Typical workflow
 
-1. Fill `data/.env` with credentials (or enter credentials once in the app and save profile to write `data/.env`).
+1. Fill `.env` with credentials (or enter credentials once in the app and save profile to write `.env`).
 2. Open app and enter/select controller URL.
 3. Connect and select target site.
 4. Refresh DHCP servers / gateways.
@@ -125,7 +125,7 @@ Then set:
 ## Data and logs
 
 - Controller profiles are stored in `data/controller_profiles.json` (without raw credentials).
-- Runtime credentials are loaded from `data/.env`.
+- Runtime credentials are loaded from `.env`.
 - File-change audit log is stored in `backup/file_changelog.jsonl`.
 - Per-run backups are stored in `backup/backup YYYYMMDDHHmm/`.
 

@@ -16,10 +16,8 @@ Entry points
 Package: `omada_batch`
 
 - `omada_batch/config.py`
-  - Constants plus env helpers.
-  - Purpose: central file path config for data/profile storage and `data/.env` loading/upserts.
-  - `load_env_file(...)`: parses `data/.env` and injects keys into process env.
-  - `upsert_env_file(...)`: creates/updates key-value pairs in `data/.env`.
+  - Constants only.
+  - Purpose: central file path config for data/profile storage.
 
 - `omada_batch/models/controller_profile.py`
   - `ControllerProfile` (dataclass): typed controller profile record.
@@ -43,7 +41,7 @@ Package: `omada_batch`
   - `save_raw(profiles)`: writes canonical profile JSON via changelog-aware writer.
 
 - `omada_batch/services/profile_service.py`
-  - `normalize_profile(item, index=0)`: canonicalizes profile keys, resolves credentials from env var references, and preserves legacy plaintext compatibility.
+  - `normalize_profile(item, index=0)`: canonicalizes profile keys and defaults.
 
 - `omada_batch/services/planner.py`
   - `generate_plan(...)`: validates parameters and builds `PlannedLan` list + warnings.
@@ -87,8 +85,7 @@ UI package split
 - `omada_batch/ui/controllers/connection_controller.py`
   - `ConnectionControllerMixin`: profile CRUD/import/export and controller connect/disconnect/site workflows.
   - Connect flow now wires API raw JSON events into UI queue via `("devjson", payload)`.
-  - Save flow writes credentials to `data/.env` and persists only env variable key references in profile JSON.
-  - Export flow writes profile JSON through changelog-aware storage helper without raw credentials.
+  - Export flow now writes profile JSON through changelog-aware storage helper.
 
 - `omada_batch/ui/controllers/networks_controller.py`
   - `NetworksControllerMixin`: gateway refresh/selection, current networks fetch/filter/export, interface catalog helpers.
@@ -147,6 +144,3 @@ Tests
   - `test_delete_file_with_changelog()`: delete helper removes file and logs `deleted`.
 - `tests/test_omada_client_parsing.py`
   - `test_client_init_sets_base_url_without_trailing_slash()`: base URL normalization.
-- `tests/test_profile_service.py`
-  - `test_normalize_profile_resolves_env_credentials()`: env-backed credential resolution.
-  - `test_normalize_profile_keeps_legacy_credentials_without_env()`: legacy plaintext compatibility behavior.
