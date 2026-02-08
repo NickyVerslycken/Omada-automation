@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 import re
-from typing import Dict, Iterable
+from typing import Dict
 
 PACKAGE_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.dirname(PACKAGE_DIR)
@@ -86,30 +86,6 @@ def upsert_env_file(values: Dict[str, str], path: str = ENV_FILE_PATH) -> None:
     for key, value in values.items():
         if value is not None:
             os.environ[key] = str(value)
-
-
-def delete_env_keys(keys: Iterable[str], path: str = ENV_FILE_PATH) -> None:
-    keys_to_remove = {str(key or "").strip() for key in keys if str(key or "").strip()}
-    if not keys_to_remove:
-        return
-
-    if os.path.exists(path):
-        with open(path, "r", encoding="utf-8") as f:
-            lines = f.read().splitlines()
-
-        kept_lines = []
-        for line in lines:
-            match = _ENV_KEY_RE.match(line)
-            if match and match.group(1) in keys_to_remove:
-                continue
-            kept_lines.append(line)
-
-        body = "\n".join(kept_lines).rstrip()
-        with open(path, "w", encoding="utf-8") as f:
-            f.write((body + "\n") if body else "")
-
-    for key in keys_to_remove:
-        os.environ.pop(key, None)
 
 
 load_env_file()
