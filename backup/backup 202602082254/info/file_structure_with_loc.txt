@@ -5,16 +5,15 @@
   start-omada-app.pyw (lines: 5)
   archive/
   backup/
-    file_changelog.jsonl (lines: 72)
+    file_changelog.jsonl (lines: 69)
   data/
-    .env (lines: 3)
-    .env.example (lines: 12)
-    controller_profiles.json (lines: 13)
-    controller_profiles.json.example (lines: 22)
+    .env (lines: 6)
+    .env.example (lines: 5)
+    controller_profiles.json (lines: 3)
   exports/
   info/
-    file_structure.txt (lines: 82)
-    file_structure_with_loc.txt (lines: 147)
+    file_structure.txt (lines: 81)
+    file_structure_with_loc.txt (lines: 146)
     code_map_with_responsibilities.txt (lines: 131)
     dependency_relations.txt (lines: 116)
     Omada_SDN_Controller_V5.9.9 API Document.html (lines: 5302)
@@ -92,7 +91,7 @@ Line Count Ranking (High to Low)
 | 6 | `omada_batch/ui/controllers/networks_controller.py` | 261 |
 | 7 | `omada_batch/ui/shell/app_shell.py` | 217 |
 | 8 | `omada_batch/storage/file_change_log.py` | 205 |
-| 9 | `info/file_structure_with_loc.txt` | 147 |
+| 9 | `info/file_structure_with_loc.txt` | 146 |
 | 10 | `omada_batch/ui/controllers/batch_controller.py` | 137 |
 | 11 | `info/code_map_with_responsibilities.txt` | 131 |
 | 12 | `omada_batch/services/device_service.py` | 121 |
@@ -103,8 +102,8 @@ Line Count Ranking (High to Low)
 | 17 | `omada_batch/services/profile_service.py` | 96 |
 | 18 | `omada_batch/config.py` | 91 |
 | 19 | `omada_batch/ui/dialogs/interface_selector.py` | 85 |
-| 20 | `info/file_structure.txt` | 82 |
-| 21 | `backup/file_changelog.jsonl` | 72 |
+| 20 | `info/file_structure.txt` | 81 |
+| 21 | `backup/file_changelog.jsonl` | 69 |
 | 22 | `omada_batch/ui/tabs/batch_tab.py` | 69 |
 | 23 | `omada_batch/ui/tabs/connection_tab.py` | 65 |
 | 24 | `omada_batch/services/planner.py` | 57 |
@@ -113,31 +112,31 @@ Line Count Ranking (High to Low)
 | 27 | `omada_batch/ui/tabs/current_networks_tab.py` | 41 |
 | 28 | `tests/test_omada_client_parsing.py` | 34 |
 | 29 | `tests/test_profile_store.py` | 32 |
-| 30 | `data/controller_profiles.json.example` | 22 |
-| 31 | `omada_batch/ui/state/app_state.py` | 20 |
-| 32 | `omada_batch/ui/tabs/logs_tab.py` | 20 |
-| 33 | `omada_batch/ui/tabs/developer_tab.py` | 19 |
-| 34 | `tests/test_planner.py` | 15 |
-| 35 | `data/controller_profiles.json` | 13 |
-| 36 | `omada_batch/ui/tabs/__init__.py` | 13 |
-| 37 | `data/.env.example` | 12 |
-| 38 | `omada_batch/models/lan.py` | 12 |
-| 39 | `omada_batch/models/controller_profile.py` | 10 |
-| 40 | `omada_batch/ui/controllers/__init__.py` | 9 |
-| 41 | `runners/sync_changelog_from_git.py` | 7 |
-| 42 | `runners/run_gui.py` | 6 |
-| 43 | `start-omada-app.pyw` | 5 |
-| 44 | `data/.env` | 3 |
-| 45 | `omada_batch/ui/main_window.py` | 3 |
-| 46 | `omada_batch/ui/shell/__init__.py` | 3 |
-| 47 | `omada_batch/ui/state/__init__.py` | 3 |
-| 48 | `omada_batch/ui/background_tasks.py` | 2 |
-| 49 | `omada_batch/ui/state.py` | 2 |
-| 50 | `omada_batch/utils/formatters.py` | 2 |
-| 51 | `omada_batch/utils/logging.py` | 2 |
-| 52 | `omada_batch/utils/validators.py` | 2 |
-| 53 | `requirements.txt` | 2 |
-| 54 | `omada_batch/ui/app.py` | 1 |
+| 30 | `omada_batch/ui/state/app_state.py` | 20 |
+| 31 | `omada_batch/ui/tabs/logs_tab.py` | 20 |
+| 32 | `omada_batch/ui/tabs/developer_tab.py` | 19 |
+| 33 | `tests/test_planner.py` | 15 |
+| 34 | `omada_batch/ui/tabs/__init__.py` | 13 |
+| 35 | `omada_batch/models/lan.py` | 12 |
+| 36 | `omada_batch/models/controller_profile.py` | 10 |
+| 37 | `omada_batch/ui/controllers/__init__.py` | 9 |
+| 38 | `runners/sync_changelog_from_git.py` | 7 |
+| 39 | `data/.env` | 6 |
+| 40 | `runners/run_gui.py` | 6 |
+| 41 | `data/.env.example` | 5 |
+| 42 | `start-omada-app.pyw` | 5 |
+| 43 | `data/controller_profiles.json` | 3 |
+| 44 | `omada_batch/ui/main_window.py` | 3 |
+| 45 | `omada_batch/ui/shell/__init__.py` | 3 |
+| 46 | `omada_batch/ui/state/__init__.py` | 3 |
+| 47 | `omada_batch/ui/background_tasks.py` | 2 |
+| 48 | `omada_batch/ui/state.py` | 2 |
+| 49 | `omada_batch/utils/formatters.py` | 2 |
+| 50 | `omada_batch/utils/logging.py` | 2 |
+| 51 | `omada_batch/utils/validators.py` | 2 |
+| 52 | `requirements.txt` | 2 |
+| 53 | `omada_batch/ui/app.py` | 1 |
+| 54 | `info/.gitkeep` | 0 |
 | 55 | `omada_batch/__init__.py` | 0 |
 | 56 | `omada_batch/api/__init__.py` | 0 |
 | 57 | `omada_batch/models/__init__.py` | 0 |

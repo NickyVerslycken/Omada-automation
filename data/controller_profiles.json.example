@@ -1,0 +1,22 @@
+{
+  "profiles": [
+    {
+      "id": "example_profile_alpha_oc200",
+      "name": "EXAMPLE ONLY - Alpha OC200 (fake)",
+      "base_url": "https://example-alpha-controller.local",
+      "client_id_env": "OMADA_PROFILE_EXAMPLE_PROFILE_ALPHA_OC200_CLIENT_ID",
+      "client_secret_env": "OMADA_PROFILE_EXAMPLE_PROFILE_ALPHA_OC200_CLIENT_SECRET",
+      "verify_ssl": false,
+      "omada_id_env": "OMADA_PROFILE_EXAMPLE_PROFILE_ALPHA_OC200_OMADAC_ID"
+    },
+    {
+      "id": "example_profile_beta_software_controller",
+      "name": "EXAMPLE ONLY - Beta Software Controller (fake)",
+      "base_url": "https://example-beta-controller.local",
+      "client_id_env": "OMADA_PROFILE_EXAMPLE_PROFILE_BETA_SOFTWARE_CONTROLLER_CLIENT_ID",
+      "client_secret_env": "OMADA_PROFILE_EXAMPLE_PROFILE_BETA_SOFTWARE_CONTROLLER_CLIENT_SECRET",
+      "verify_ssl": true,
+      "omada_id_env": "OMADA_PROFILE_EXAMPLE_PROFILE_BETA_SOFTWARE_CONTROLLER_OMADAC_ID"
+    }
+  ]
+}

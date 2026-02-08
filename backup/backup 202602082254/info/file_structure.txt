@@ -10,7 +10,6 @@ Python-Omada-automation/
     .env
     .env.example
     controller_profiles.json
-    controller_profiles.json.example
   exports/
   info/
     file_structure.txt
