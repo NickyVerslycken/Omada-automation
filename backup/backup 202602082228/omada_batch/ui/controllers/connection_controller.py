@@ -11,7 +11,6 @@ from omada_batch.config import (
     DEFAULT_CLIENT_ID_ENV_VAR,
     DEFAULT_CLIENT_SECRET_ENV_VAR,
     DEFAULT_OMADA_ID_ENV_VAR,
-    delete_env_keys,
     upsert_env_file,
 )
 from omada_batch.services.profile_service import (
@@ -239,33 +238,13 @@ class ConnectionControllerMixin:
         if idx < 0:
             messagebox.showwarning("Missing", "Select a saved profile first.")
             return
-        removed_profile = self.controller_profiles[idx]
-        name = str(removed_profile.get("name") or "(unnamed)")
+        name = str(self.controller_profiles[idx].get("name") or "(unnamed)")
         if not messagebox.askyesno("Confirm removal", f"Remove profile '{name}'?"):
             return
-
         self.controller_profiles.pop(idx)
-        remaining_env_keys = {
-            str(profile.get(field) or "").strip()
-            for profile in self.controller_profiles
-            for field in ("client_id_env", "client_secret_env", "omada_id_env")
-            if str(profile.get(field) or "").strip()
-        }
-        env_keys_to_remove = [
-            str(removed_profile.get(field) or "").strip()
-            for field in ("client_id_env", "client_secret_env", "omada_id_env")
-            if str(removed_profile.get(field) or "").strip()
-            and str(removed_profile.get(field) or "").strip() not in remaining_env_keys
-        ]
-        if env_keys_to_remove:
-            delete_env_keys(env_keys_to_remove)
-
         self._save_controller_profiles()
         self._refresh_controller_profile_combo()
-        if env_keys_to_remove:
-            self._q.put(("log", f"Profile removed: {name}; removed env keys: {', '.join(env_keys_to_remove)}"))
-        else:
-            self._q.put(("log", f"Profile removed: {name}"))
+        self._q.put(("log", f"Profile removed: {name}"))
 
     def on_import_controller_profiles(self) -> None:
         path = filedialog.askopenfilename(

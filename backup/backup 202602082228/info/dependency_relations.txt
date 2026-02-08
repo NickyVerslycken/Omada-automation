@@ -23,7 +23,7 @@ UI composition split
 
 Controller dependencies
 - `connection_controller.py` -> `omada_batch/api/omada_client.py` (API client creation/use).
-- `connection_controller.py` -> `omada_batch/config.py` (env var key defaults plus `data/.env` upsert/delete helpers).
+- `connection_controller.py` -> `omada_batch/config.py` (env var key defaults and `data/.env` upsert helpers).
 - `connection_controller.py` -> `omada_batch/services/profile_service.py` (profile normalization + profile ID/env-key generation helpers).
 - `connection_controller.py` -> `omada_batch/storage/file_change_log.py` (profile export JSON writes with changelog).
 - `networks_controller.py` -> `omada_batch/services/lan_service.py` (device/interface catalog building).
@@ -47,8 +47,6 @@ Tests
 - `tests/test_profile_store.py` -> `omada_batch/storage/file_change_log.py`.
 - `tests/test_omada_client_parsing.py` -> `omada_batch/api/omada_client.py`.
 - `tests/test_profile_service.py` -> `omada_batch/services/profile_service.py`.
-- `tests/test_profile_service.py` -> `omada_batch/config.py`.
-- `tests/test_profile_service.py` -> `omada_batch/ui/controllers/connection_controller.py`.
 
 2) Class/function ownership and usage direction
 -----------------------------------------------
@@ -73,7 +71,6 @@ Tests
 - handles profile CRUD/import/export, controller auth/session connect, site list and disconnect flow.
 - forwards API request/response JSON payloads into queue event type `devjson`.
 - writes profile credentials into `data/.env` via config helper using profile-ID-scoped env keys and stores only env-key references in profile JSON.
-- removes unreferenced credential env keys from `data/.env` when a profile is deleted.
 - uses changelog-aware JSON writer when exporting controller profiles without raw secrets.
 
 `omada_batch/ui/controllers/networks_controller.py`
@@ -110,7 +107,7 @@ Tests
 - contain pure-ish domain helpers invoked from controllers.
 
 `omada_batch/config.py`
-- provides `data/.env` parsing/update/delete utilities used by profile normalization/save/remove workflows.
+- provides `data/.env` parsing and update utilities used by profile normalization/save workflows.
 
 3) Core data-flow direction
 ---------------------------

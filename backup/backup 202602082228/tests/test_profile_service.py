@@ -1,7 +1,3 @@
-import os
-
-import omada_batch.ui.controllers.connection_controller as connection_controller_module
-from omada_batch.config import delete_env_keys
 from omada_batch.services.profile_service import (
     ensure_unique_profile_id,
     normalize_profile,
@@ -75,61 +71,3 @@ def test_normalize_profile_uses_profile_id_based_env_keys(monkeypatch):
 def test_ensure_unique_profile_id_appends_suffix():
     profile_id = ensure_unique_profile_id("home_controller", ["home_controller", "other", "home_controller_2"])
     assert profile_id == "home_controller_3"
-
-
-def test_delete_env_keys_removes_entries_from_file_and_process_env(monkeypatch, tmp_path):
-    env_path = tmp_path / ".env"
-    env_path.write_text("A=1\nB=2\n# Keep comment\nC=3\n", encoding="utf-8")
-    monkeypatch.setenv("A", "1")
-    monkeypatch.setenv("B", "2")
-    monkeypatch.setenv("C", "3")
-
-    delete_env_keys(["B", "C"], path=str(env_path))
-
-    assert env_path.read_text(encoding="utf-8") == "A=1\n# Keep comment\n"
-    assert os.environ.get("A") == "1"
-    assert "B" not in os.environ
-    assert "C" not in os.environ
-
-
-def test_remove_profile_deletes_only_unreferenced_env_keys(monkeypatch):
-    class Dummy(connection_controller_module.ConnectionControllerMixin):
-        pass
-
-    app = Dummy()
-    app.controller_profiles = [
-        {
-            "name": "remove-me",
-            "client_id_env": "ENV_ID_REMOVE",
-            "client_secret_env": "ENV_SECRET_REMOVE",
-            "omada_id_env": "ENV_OMADA_REMOVE",
-        },
-        {
-            "name": "keep-me",
-            "client_id_env": "ENV_ID_REMOVE",
-            "client_secret_env": "ENV_SECRET_KEEP",
-            "omada_id_env": "ENV_OMADA_KEEP",
-        },
-    ]
-    app._selected_controller_profile_index = lambda: 0
-    app._save_controller_profiles = lambda: None
-    app._refresh_controller_profile_combo = lambda: None
-
-    class _Queue:
-        def __init__(self):
-            self.items = []
-
-        def put(self, item):
-            self.items.append(item)
-
-    app._q = _Queue()
-
-    removed_keys = []
-    monkeypatch.setattr(connection_controller_module, "delete_env_keys", lambda keys: removed_keys.extend(keys))
-    monkeypatch.setattr(connection_controller_module.messagebox, "askyesno", lambda *args, **kwargs: True)
-    monkeypatch.setattr(connection_controller_module.messagebox, "showwarning", lambda *args, **kwargs: None)
-
-    app.on_remove_controller_profile()
-
-    assert len(app.controller_profiles) == 1
-    assert removed_keys == ["ENV_SECRET_REMOVE", "ENV_OMADA_REMOVE"]
