@@ -38,37 +38,16 @@ def build_current_networks_tab(app: "App") -> None:
     app.lbl_networks_state = ttk.Label(top, text="")
     app.lbl_networks_state.pack(side="left", padx=(10, 0))
 
-    tree_wrap = ttk.Frame(frame)
-    tree_wrap.pack(fill="both", expand=True, pady=(10, 0))
-    tree_wrap.grid_columnconfigure(0, weight=1)
-    tree_wrap.grid_rowconfigure(0, weight=1)
-
     cols = ("name", "vlan", "gatewaySubnet", "dhcp_start", "dhcp_end", "id")
-    app.tree_networks = ttk.Treeview(tree_wrap, columns=cols, show="headings", height=18)
+    app.tree_networks = ttk.Treeview(frame, columns=cols, show="headings", height=18)
     for col, width in zip(cols, (220, 70, 170, 120, 120, 260)):
         app.tree_networks.heading(col, text=col)
         app.tree_networks.column(col, width=width, anchor="w")
-
-    app.scr_tree_networks_y = ttk.Scrollbar(tree_wrap, orient="vertical", command=app.tree_networks.yview)
-    app.scr_tree_networks_x = ttk.Scrollbar(tree_wrap, orient="horizontal", command=app.tree_networks.xview)
-    app.tree_networks.configure(yscrollcommand=app.scr_tree_networks_y.set, xscrollcommand=app.scr_tree_networks_x.set)
-
-    app.tree_networks.grid(row=0, column=0, sticky="nsew")
-    app.scr_tree_networks_y.grid(row=0, column=1, sticky="ns")
-    app.scr_tree_networks_x.grid(row=1, column=0, sticky="ew")
+    app.tree_networks.pack(fill="both", expand=True, pady=(10, 0))
 
     ttk.Label(frame, text="Raw JSON (selected row)").pack(anchor="w", pady=(10, 0))
-    raw_wrap = ttk.Frame(frame)
-    raw_wrap.pack(fill="x", expand=False)
-    raw_wrap.grid_columnconfigure(0, weight=1)
-    raw_wrap.grid_rowconfigure(0, weight=1)
-
-    app.txt_network_raw = tk.Text(raw_wrap, height=8)
-    app.scr_network_raw_y = ttk.Scrollbar(raw_wrap, orient="vertical", command=app.txt_network_raw.yview)
-    app.txt_network_raw.configure(yscrollcommand=app.scr_network_raw_y.set)
-
-    app.txt_network_raw.grid(row=0, column=0, sticky="nsew")
-    app.scr_network_raw_y.grid(row=0, column=1, sticky="ns")
+    app.txt_network_raw = tk.Text(frame, height=8)
+    app.txt_network_raw.pack(fill="x", expand=False)
     app.tree_networks.bind("<<TreeviewSelect>>", app._on_network_selected)
 
     app._networks_cache_all = []

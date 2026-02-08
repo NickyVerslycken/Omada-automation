@@ -29,6 +29,7 @@ Controller dependencies
 - `networks_controller.py` -> `omada_batch/services/lan_service.py` (device/interface catalog building).
 - `networks_controller.py` -> `omada_batch/services/device_service.py` (display/merge/extract interface helpers).
 - `networks_controller.py` -> `omada_batch/storage/file_change_log.py` (network export JSON writes with changelog).
+- `networks_controller.py` -> `omada_batch/ui/dialogs/interface_selector.py` (interface selection modal).
 - `batch_controller.py` -> `omada_batch/services/planner.py` (plan generation).
 - `batch_controller.py` -> `omada_batch/storage/file_change_log.py` (plan export JSON writes with changelog).
 
@@ -78,16 +79,12 @@ Tests
 `omada_batch/ui/controllers/networks_controller.py`
 - contains class `NetworksControllerMixin`.
 - handles gateway/device refresh, network fetch/filter/export, and gateway-to-network matching logic.
-- filters DHCP server choices to gateway-class devices before populating comboboxes.
 - gateway/network matcher now checks additional ownership keys such as `gatewayMac` and `assignIpDeviceMac`.
-- triggers inline batch-tab interface selector refresh when gateway selection/state changes.
 - uses changelog-aware JSON writer when exporting LAN networks.
 
 `omada_batch/ui/controllers/batch_controller.py`
 - contains class `BatchControllerMixin`.
 - handles plan generation, preview export, push loop, and push-button enablement state.
-- manages inline per-network interface/port selection table in Batch Create tab (replacing popup selection).
-- consumes WAN/selectable metadata from interface catalog and blocks WAN port selection in UI + payload mapping.
 - uses changelog-aware JSON writer when exporting batch plans.
 
 `omada_batch/storage/file_change_log.py`
@@ -130,7 +127,7 @@ Gateway/network flow
 
 Batch flow
 1. Batch parameters -> `generate_plan` -> `AppState.plan`.
-2. Interface mapping configured inline in Batch Create tab with WAN ports visible but disabled.
+2. Optional interface mapping via dialog.
 3. Per-plan push -> `OmadaOpenApiClient.create_lan_network`.
 
 4) Dependency characteristics
