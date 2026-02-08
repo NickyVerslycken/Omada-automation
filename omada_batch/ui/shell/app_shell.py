@@ -24,7 +24,7 @@ from omada_batch.ui.tabs import (
 class App(tk.Tk, ConnectionControllerMixin, NetworksControllerMixin, BatchControllerMixin):
     def __init__(self):
         super().__init__()
-        self.title("Omada LAN/VLAN Batch Manager (IPv4) - v4")
+        self.title("Omada LAN/VLAN Batch Manager (IPv4)")
         self.geometry("1100x720")
 
         self.state = AppState(profile_store=ProfileStore())
