@@ -55,7 +55,6 @@ Package: `omada_batch`
 
 - `omada_batch/services/lan_service.py`
   - `build_interface_catalog(devices)`: extracts gateway/switch + interface metadata, preferring stable `portId` IDs and natural port `name` labels.
-  - Marks WAN ports as non-selectable for LAN assignment and deduplicates repeated interface IDs.
 
 - `omada_batch/services/device_service.py`
   - `_is_generic_interface_name(name, iid)`: detects placeholder names.
@@ -99,17 +98,11 @@ UI package split
 
 - `omada_batch/ui/controllers/networks_controller.py`
   - `NetworksControllerMixin`: gateway refresh/selection, current networks fetch/filter/export, interface catalog helpers.
-  - Filters DHCP server combobox options to gateway devices only (non-gateway devices are skipped).
   - `_network_matches_gateway(...)` now also considers extra Omada ownership fields such as `gatewayMac` and `assignIpDeviceMac`.
-  - Gateway selection changes now trigger refresh of inline batch-tab interface mapping controls.
   - Network export now writes JSON through changelog-aware storage helper.
 
 - `omada_batch/ui/controllers/batch_controller.py`
   - `BatchControllerMixin`: plan preview/export and push-to-controller workflow.
-  - Builds and maintains inline LAN-interface mapping UI state in Batch Create tab (no popup), rendered as a grid/table.
-  - Resolves interface catalog from selected DHCP server, deduplicates interface IDs, and avoids injecting unrelated network-derived IDs.
-  - Disables WAN interfaces in selection UI while keeping them visible with explicit WAN-disabled labels.
-  - Validates per-network interface selection directly from tab controls before push.
   - Plan export now writes JSON through changelog-aware storage helper.
 
 - `omada_batch/ui/shell/app_shell.py`
@@ -125,10 +118,9 @@ UI package split
 
 - `omada_batch/ui/tabs/current_networks_tab.py`
   - `build_current_networks_tab(app)`: builds current-LAN tab widgets and callbacks.
-  - Adds explicit vertical/horizontal scrollbars to LAN list table and vertical scrollbar to bottom raw-JSON viewer.
 
 - `omada_batch/ui/tabs/batch_tab.py`
-  - `build_batch_tab(app)`: builds batch planning/push tab widgets and embedded LAN-interface selection matrix (canvas + scrollbars).
+  - `build_batch_tab(app)`: builds batch planning/push tab widgets and callbacks.
 
 - `omada_batch/ui/tabs/logs_tab.py`
   - `build_logs_tab(app)`: builds log tab widgets with vertical scrollbar and clear action.
@@ -137,7 +129,7 @@ UI package split
   - `build_developer_tab(app)`: builds developer JSON output tab with clear button and vertical scrollbar.
 
 - `omada_batch/ui/dialogs/interface_selector.py`
-  - `prompt_interface_selection(...)`: legacy modal mapping helper retained for reference; batch flow now uses inline tab controls.
+  - `prompt_interface_selection(...)`: modal mapping of planned networks to selected interface IDs.
 
 - `omada_batch/ui/app.py`
   - Re-export/import shim for `App`.

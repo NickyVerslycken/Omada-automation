@@ -80,61 +80,12 @@ def build_batch_tab(app: "App") -> None:
     app.lbl_batch_state = ttk.Label(frame, text="")
     app.lbl_batch_state.pack(anchor="w", pady=(6, 0))
 
-    iface_box = ttk.LabelFrame(frame, text="LAN Interface Selection (selected DHCP server)", padding=8)
-    iface_box.pack(fill="both", expand=False, pady=(8, 0))
-
-    app.lbl_batch_iface_state = ttk.Label(
-        iface_box,
-        text="Generate preview and select DHCP server to load interface/port mapping in this tab.",
-    )
-    app.lbl_batch_iface_state.pack(anchor="w")
-
-    iface_container = ttk.Frame(iface_box)
-    iface_container.pack(fill="both", expand=True, pady=(6, 0))
-    iface_container.grid_columnconfigure(0, weight=1)
-    iface_container.grid_rowconfigure(0, weight=1)
-
-    app.canvas_batch_iface = tk.Canvas(iface_container, highlightthickness=0, height=170)
-    app.scr_batch_iface_y = ttk.Scrollbar(iface_container, orient="vertical", command=app.canvas_batch_iface.yview)
-    app.scr_batch_iface_x = ttk.Scrollbar(iface_container, orient="horizontal", command=app.canvas_batch_iface.xview)
-    app.frm_batch_iface_inner = ttk.Frame(app.canvas_batch_iface)
-
-    app.canvas_batch_iface.configure(yscrollcommand=app.scr_batch_iface_y.set, xscrollcommand=app.scr_batch_iface_x.set)
-    app.canvas_batch_iface.grid(row=0, column=0, sticky="nsew")
-    app.scr_batch_iface_y.grid(row=0, column=1, sticky="ns")
-    app.scr_batch_iface_x.grid(row=1, column=0, sticky="ew")
-
-    app._batch_iface_canvas_window = app.canvas_batch_iface.create_window((0, 0), window=app.frm_batch_iface_inner, anchor="nw")
-    app.frm_batch_iface_inner.bind(
-        "<Configure>",
-        lambda _e: app.canvas_batch_iface.configure(scrollregion=app.canvas_batch_iface.bbox("all")),
-    )
-
-    app._batch_iface_catalog = []
-    app._batch_iface_row_vars = {}
-    app._batch_iface_apply_all_vars = []
-
-    tree_wrap = ttk.Frame(frame)
-    tree_wrap.pack(fill="both", expand=True, pady=(10, 0))
-    tree_wrap.grid_columnconfigure(0, weight=1)
-    tree_wrap.grid_rowconfigure(0, weight=1)
-
     cols = ("#", "name", "vlan", "subnet", "gateway", "dhcp_start", "dhcp_end")
-    app.tree_plan = ttk.Treeview(tree_wrap, columns=cols, show="headings", height=14)
+    app.tree_plan = ttk.Treeview(frame, columns=cols, show="headings", height=14)
     for col, width in zip(cols, (40, 200, 70, 150, 120, 120, 120)):
         app.tree_plan.heading(col, text=col)
         app.tree_plan.column(col, width=width, anchor="w")
-
-    app.scr_tree_plan_y = ttk.Scrollbar(tree_wrap, orient="vertical", command=app.tree_plan.yview)
-    app.scr_tree_plan_x = ttk.Scrollbar(tree_wrap, orient="horizontal", command=app.tree_plan.xview)
-    app.tree_plan.configure(yscrollcommand=app.scr_tree_plan_y.set, xscrollcommand=app.scr_tree_plan_x.set)
-
-    app.tree_plan.grid(row=0, column=0, sticky="nsew")
-    app.scr_tree_plan_y.grid(row=0, column=1, sticky="ns")
-    app.scr_tree_plan_x.grid(row=1, column=0, sticky="ew")
+    app.tree_plan.pack(fill="both", expand=True, pady=(10, 0))
 
     for col in range(4):
         form.grid_columnconfigure(col, weight=1 if col in (1, 3) else 0)
-
-    if hasattr(app, "_refresh_batch_interface_selection_ui"):
-        app._refresh_batch_interface_selection_ui()

@@ -12,6 +12,7 @@ from omada_batch.services.device_service import (
 )
 from omada_batch.services.lan_service import build_interface_catalog
 from omada_batch.storage.file_change_log import write_json_with_changelog
+from omada_batch.ui.dialogs.interface_selector import prompt_interface_selection
 
 
 class NetworksControllerMixin:
@@ -39,24 +40,7 @@ class NetworksControllerMixin:
         return build_interface_catalog(devices)
 
     def _on_gateways(self, gateways) -> None:
-        raw_gateways = gateways or []
-        filtered: List[Dict[str, Any]] = []
-        for gateway in raw_gateways:
-            dtype_raw = gateway.get("type")
-            try:
-                dtype = int(dtype_raw) if dtype_raw is not None else None
-            except Exception:
-                dtype = None
-            if dtype == 1:
-                filtered.append(gateway)
-                continue
-            label_text = str(gateway.get("label") or "").strip().lower()
-            if "[gateway]" in label_text:
-                filtered.append(gateway)
-        self.gateways = filtered
-        dropped = len(raw_gateways) - len(filtered)
-        if dropped > 0:
-            self._q.put(("log", f"Skipped {dropped} non-gateway device(s) from DHCP server selection list."))
+        self.gateways = gateways or []
         self.current_gateway_filter_index = -1
         self.batch_gateway_index = -1
 
@@ -87,7 +71,6 @@ class NetworksControllerMixin:
         self._q.put(("log", f"Loaded {len(self.gateways)} DHCP servers for selected site."))
         self._q.put(("log", f"Batch DHCP server={self._batch_gateway_name() or '(none)'}"))
         self._update_push_state()
-        self._refresh_batch_interface_selection_ui()
 
     def _current_gateway(self) -> Optional[Dict[str, Any]]:
         idx = self.current_gateway_filter_index
@@ -124,7 +107,6 @@ class NetworksControllerMixin:
         if gateway:
             self._q.put(("log", f"Batch DHCP server={gateway.get('name') or gateway.get('label') or '(unnamed)'}"))
         self._update_push_state()
-        self._refresh_batch_interface_selection_ui()
 
     def on_fetch_networks(self) -> None:
         if not self.client or not self.selected_site_id:
@@ -294,10 +276,15 @@ class NetworksControllerMixin:
     def _merge_interface_catalog_names(self, base: List[Dict[str, str]], extra: List[Dict[str, str]]) -> List[Dict[str, str]]:
         return merge_interface_catalog_names(base, extra)
 
+    def _prompt_interface_selection(self, interfaces: List[Dict[str, str]]) -> Optional[Dict[int, List[str]]]:
+        return prompt_interface_selection(self, self.plan, interfaces, self._interface_display_name)
+
     def _get_interface_catalog_from_networks(self, gateway: Optional[Dict[str, Any]] = None) -> List[Dict[str, str]]:
         source = self._networks_cache_all
         if gateway is not None:
             source = [n for n in self._networks_cache_all if self._network_matches_gateway(n, gateway)]
+            if not source:
+                source = self._networks_cache_all
         catalog = extract_interface_catalog_from_networks(source)
         if catalog:
             return catalog
@@ -306,7 +293,7 @@ class NetworksControllerMixin:
                 nets = self.client.get_lan_networks(self.selected_site_id, page=1, page_size=500)
                 if gateway is not None:
                     filtered = [n for n in nets if self._network_matches_gateway(n, gateway)]
-                    nets = filtered
+                    nets = filtered or nets
                 return extract_interface_catalog_from_networks(nets)
             except Exception as exc:
                 self._q.put(("log", f"WARNING: Could not fetch interfaceIds from networks: {exc}"))

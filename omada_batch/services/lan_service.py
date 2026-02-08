@@ -3,6 +3,95 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 
+def _to_int(value: Any) -> int | None:
+    try:
+        if value is None:
+            return None
+        return int(value)
+    except Exception:
+        return None
+
+
+def _text(value: Any) -> str:
+    return str(value or "").strip()
+
+
+def _is_wan_interface(port: Dict[str, Any], name: str) -> bool:
+    lowered_name = _text(name).lower()
+
+    # Common explicit boolean markers from various Omada payload shapes.
+    for key in ("isWan", "wan", "wanPort", "internetPort", "isInternetPort"):
+        raw = port.get(key)
+        if isinstance(raw, bool):
+            if raw:
+                return True
+        elif _text(raw).lower() in ("1", "true", "yes", "wan", "internet"):
+            return True
+
+    mode_text = _text(port.get("mode")).lower()
+    mode_int = _to_int(port.get("mode"))
+    if mode_text in ("wan", "internet"):
+        return True
+    if mode_int == 0:
+        # In observed payloads, mode=0 marks WAN mode on WAN/LAN combo ports.
+        return True
+
+    ptype_int = _to_int(port.get("type"))
+    if ptype_int in (3, 4):
+        # 3=dedicated WAN, 4=USB modem in observed payloads.
+        return True
+
+    role_text = " ".join(
+        _text(port.get(k)).lower()
+        for k in ("role", "usage", "purpose", "portType", "interfaceType")
+        if _text(port.get(k))
+    )
+    if "wan" in role_text and "wan/lan" not in role_text and "lan/wan" not in role_text:
+        return True
+
+    if "wan" in lowered_name and "wan/lan" not in lowered_name and "lan/wan" not in lowered_name:
+        return True
+    return False
+
+
+def _is_selectable_lan_interface(port: Dict[str, Any], name: str, is_wan: bool) -> bool:
+    if is_wan:
+        return False
+
+    mode_text = _text(port.get("mode")).lower()
+    mode_int = _to_int(port.get("mode"))
+    if mode_text in ("lan",):
+        return True
+    if mode_int == 1:
+        return True
+
+    ptype_int = _to_int(port.get("type"))
+    if ptype_int in (3, 4):
+        return False
+
+    lowered_name = _text(name).lower()
+    if "wan/lan" in lowered_name or "lan/wan" in lowered_name:
+        return True
+
+    return True
+
+
+def _merge_iface(existing: Dict[str, Any], incoming: Dict[str, Any]) -> Dict[str, Any]:
+    merged = dict(existing)
+    for key, value in incoming.items():
+        if key in ("is_wan", "is_selectable"):
+            continue
+        if _text(merged.get(key)):
+            continue
+        if _text(value):
+            merged[key] = value
+
+    merged["is_wan"] = bool(existing.get("is_wan")) or bool(incoming.get("is_wan"))
+    # Keep interface selectable only when both sides consider it selectable.
+    merged["is_selectable"] = bool(existing.get("is_selectable", True)) and bool(incoming.get("is_selectable", True))
+    return merged
+
+
 def build_interface_catalog(devices: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     catalog: List[Dict[str, Any]] = []
     seen: set[str] = set()
@@ -46,7 +135,8 @@ def build_interface_catalog(devices: List[Dict[str, Any]]) -> List[Dict[str, Any
         seen.add(unique_key)
 
         iface_ids: List[str] = []
-        iface_list: List[Dict[str, str]] = []
+        iface_list: List[Dict[str, Any]] = []
+        iface_map: Dict[str, Dict[str, Any]] = {}
         raw_iface_ids = dev.get("interfaceIds")
         if isinstance(raw_iface_ids, list):
             for iid in raw_iface_ids:
@@ -77,20 +167,38 @@ def build_interface_catalog(devices: List[Dict[str, Any]]) -> List[Dict[str, Any
                     or it.get("port")
                     or sid
                 )
-                iface_list.append(
-                    {
-                        "id": sid,
-                        "name": iname,
-                        "port_id": str(it.get("portId") or ""),
-                        "display_name": str(it.get("displayName") or ""),
-                        "port_name": str(it.get("portName") or ""),
-                        "interface_name": str(it.get("interfaceName") or ""),
-                        "if_name": str(it.get("ifName") or it.get("ifname") or ""),
-                        "alias": str(it.get("alias") or it.get("customName") or ""),
-                    }
-                )
+                is_wan = _is_wan_interface(it, iname)
+                iface = {
+                    "id": sid,
+                    "name": iname,
+                    "port_id": str(it.get("portId") or ""),
+                    "display_name": str(it.get("displayName") or ""),
+                    "port_name": str(it.get("portName") or ""),
+                    "interface_name": str(it.get("interfaceName") or ""),
+                    "if_name": str(it.get("ifName") or it.get("ifname") or ""),
+                    "alias": str(it.get("alias") or it.get("customName") or ""),
+                    "mode": str(it.get("mode") or ""),
+                    "type_raw": str(it.get("type") or ""),
+                    "is_wan": is_wan,
+                    "is_selectable": _is_selectable_lan_interface(it, iname, is_wan),
+                }
+                if sid in iface_map:
+                    iface_map[sid] = _merge_iface(iface_map[sid], iface)
+                else:
+                    iface_map[sid] = iface
+                    iface_list.append(iface_map[sid])
         if not iface_list:
-            iface_list = [{"id": sid, "name": sid} for sid in iface_ids]
+            iface_list = [{"id": sid, "name": sid, "is_wan": False, "is_selectable": True} for sid in iface_ids]
+
+        # Normalize duplicates in interface_ids while preserving first-seen order.
+        uniq_iface_ids: List[str] = []
+        seen_iids: set[str] = set()
+        for iid in iface_ids:
+            sid = _text(iid)
+            if not sid or sid in seen_iids:
+                continue
+            seen_iids.add(sid)
+            uniq_iface_ids.append(sid)
 
         catalog.append(
             {
@@ -101,7 +209,7 @@ def build_interface_catalog(devices: List[Dict[str, Any]]) -> List[Dict[str, Any
                 "type": dtype,
                 "model": model or None,
                 "device_id": dev_id or None,
-                "interface_ids": iface_ids,
+                "interface_ids": uniq_iface_ids,
                 "interfaces": iface_list,
             }
         )
