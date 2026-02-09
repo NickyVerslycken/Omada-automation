@@ -14,6 +14,7 @@
   - **Rename/Move**: backup the *source file* before renaming/moving.
   - **New files**: no backup required.
 - If the timestamp folder already exists (e.g., same minute), **reuse it** (do not fail).
+- The `backup/` folder (including `backup/file_changelog.jsonl`) is for local developer use only and must not be committed or pushed to GitHub.
 
 ## Changelog policy (mandatory)
 - **Whenever a file is created, edited, deleted, or moved/renamed, append a changelog entry**.

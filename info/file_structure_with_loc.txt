@@ -1,5 +1,5 @@
 ﻿Python-Omada-automation/ (with file line counts)
-  AGENTS.md (lines: 47)
+  AGENTS.md (lines: 53)
   README.md (lines: 108)
   requirements.txt (lines: 2)
   start-omada-app.pyw (lines: 5)
@@ -14,7 +14,7 @@
   exports/
   info/
     file_structure.txt (lines: 82)
-    file_structure_with_loc.txt (lines: 147)
+    file_structure_with_loc.txt (lines: 148)
     code_map_with_responsibilities.txt (lines: 139)
     dependency_relations.txt (lines: 119)
     Omada_SDN_Controller_V5.9.9 API Document.html (lines: 5302)
@@ -94,7 +94,7 @@ Line Count Ranking (High to Low)
 | 8 | `omada_batch/ui/shell/app_shell.py` | 217 |
 | 9 | `omada_batch/storage/file_change_log.py` | 205 |
 | 10 | `omada_batch/services/lan_service.py` | 185 |
-| 11 | `info/file_structure_with_loc.txt` | 147 |
+| 11 | `info/file_structure_with_loc.txt` | 148 |
 | 12 | `info/code_map_with_responsibilities.txt` | 139 |
 | 13 | `omada_batch/services/device_service.py` | 121 |
 | 14 | `info/dependency_relations.txt` | 119 |
@@ -110,7 +110,7 @@ Line Count Ranking (High to Low)
 | 24 | `omada_batch/ui/tabs/connection_tab.py` | 65 |
 | 25 | `omada_batch/services/planner.py` | 57 |
 | 26 | `omada_batch/ui/tabs/current_networks_tab.py` | 57 |
-| 27 | `AGENTS.md` | 47 |
+| 27 | `AGENTS.md` | 53 |
 | 28 | `omada_batch/storage/profile_store.py` | 43 |
 | 29 | `tests/test_profile_store.py` | 32 |
 | 30 | `data/controller_profiles.json.example` | 22 |
