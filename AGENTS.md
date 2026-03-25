@@ -42,6 +42,7 @@
   - `info/file_structure_with_loc.txt`
 
 ## Info to use
+- **For any Omada API question, consult the `omada-api` skill/tool first if it is available.** Only fall back to the documentation in the `info/` folder when the skill does not provide a sufficient answer.
 - In the folder info you can find files like *.har what is a log when configuring the omada controller directly in trough the web interface using my browser, also you can find here API information, for information about the API but this is possible a bit outdated, if necessary you may search on the web for solutions. Probably the most important file for developing the API connectors is the `info/Omada Open API v6.2 - Full API.md`, this contains the most recent API documentation for the Omada controller.
 
 ## API fallback and logging (general)

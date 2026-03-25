@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "You are allowed to read and edit files in the folder where you are in now and it's subfolders following the CLAUD.md file instructions and restrictions. You are not allowed to read, write or execute something in an other folder on this computer, you are also not allowed to do any GIT commands/actions."
+    ]
+  }
+}

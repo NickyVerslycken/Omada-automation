@@ -618,6 +618,14 @@ class OmadaOpenApiClient:
                     self.log(f"SUCCESS POST {url.replace(self.base_url,'')} (create lan {api_ver})")
                     return data
                 msg = (data.get("msg") or "").lower()
+                # -1600 = "Unsupported request path" → entire API version unsupported, skip to next
+                if data.get("errorCode") == -1600:
+                    self.log(
+                        f"FAILED POST {url.replace(self.base_url,'')} (create lan {api_ver}): "
+                        f"{data.get('errorCode')} {data.get('msg')}"
+                    )
+                    endpoint_failed = True
+                    break
                 if interface_field_enabled and "interface" in msg and ("does not match" in msg or "port information" in msg):
                     interface_field_enabled = False
                     base_body.pop("interfaceIds", None)

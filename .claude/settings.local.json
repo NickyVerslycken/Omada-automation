@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"C:/Dev/Omada-automation/backup/file_changelog.jsonl\":*)",
+      "Bash(\"c:/Dev/Omada-automation/backup/file_changelog.jsonl\":*)"
+    ]
+  }
+}
