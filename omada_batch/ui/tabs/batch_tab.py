@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import tkinter as tk
-from tkinter import ttk
 from typing import TYPE_CHECKING, Dict
 
 import customtkinter as ctk
@@ -9,14 +8,15 @@ import customtkinter as ctk
 from omada_batch.ui.tabs.batch_networks_tab import build_batch_networks_subpage
 from omada_batch.ui.tabs.batch_vlan_tab import build_batch_vlan_subpage
 from omada_batch.ui.theme import (
+    BORDER_LIGHT,
+    BTN_CORNER_RADIUS,
     FONT_BODY_BOLD,
-    FONT_LABEL,
     PRIMARY,
+    PRIMARY_HOVER,
     SURFACE,
     SURFACE_ALT,
     SURFACE_CARD,
-    TEXT_MUTED,
-    TEXT_PRIMARY,
+    TEXT_ON_PRIMARY,
     TEXT_SECONDARY,
 )
 
@@ -36,33 +36,38 @@ def build_batch_tab(app: "App") -> None:
     container = ctk.CTkFrame(app.tab_batch, fg_color=SURFACE, corner_radius=0)
     container.pack(fill="both", expand=True)
 
-    # ── Segmented switcher bar ────────────────────────────────────
-    switcher_bar = ctk.CTkFrame(container, fg_color=SURFACE_CARD, height=48, corner_radius=0)
+    # ── Tab switcher bar ──────────────────────────────────────────
+    switcher_bar = ctk.CTkFrame(container, fg_color=SURFACE_CARD, height=52, corner_radius=0)
     switcher_bar.pack(fill="x")
     switcher_bar.pack_propagate(False)
 
-    labels = [label for _, label, _ in BATCH_SUBPAGES]
-    app._batch_subpage_var = tk.StringVar(value=labels[0])
-    seg = ctk.CTkSegmentedButton(
-        switcher_bar,
-        values=labels,
-        variable=app._batch_subpage_var,
-        command=lambda val: _switch_subpage(app, val),
-        font=FONT_BODY_BOLD,
-        selected_color=PRIMARY,
-        selected_hover_color=PRIMARY,
-        unselected_color=SURFACE_ALT,
-        unselected_hover_color=SURFACE_ALT,
-        text_color=TEXT_PRIMARY,
-        text_color_disabled=TEXT_MUTED,
-        corner_radius=6,
-        height=34,
-    )
-    seg.pack(side="left", padx=16, pady=8)
+    tab_inner = ctk.CTkFrame(switcher_bar, fg_color="transparent")
+    tab_inner.pack(side="left", fill="y", padx=16)
+
+    app._batch_subpage_var = tk.StringVar(value=BATCH_SUBPAGES[0][0])
+    app._batch_tab_buttons: Dict[str, ctk.CTkButton] = {}
+
+    for key, label, _ in BATCH_SUBPAGES:
+        btn = ctk.CTkButton(
+            tab_inner,
+            text=label,
+            font=FONT_BODY_BOLD,
+            fg_color="transparent",
+            hover_color=SURFACE_ALT,
+            text_color=TEXT_SECONDARY,
+            corner_radius=BTN_CORNER_RADIUS,
+            height=36,
+            width=120,
+            command=lambda k=key: _switch_subpage(app, k),
+        )
+        btn.pack(side="left", padx=(0, 6), pady=8)
+        app._batch_tab_buttons[key] = btn
+
+    # Bottom border below tab bar
+    ctk.CTkFrame(container, height=1, fg_color=BORDER_LIGHT, corner_radius=0).pack(fill="x")
 
     # ── Sub-page frames ───────────────────────────────────────────
     app._batch_subpages: Dict[str, ctk.CTkFrame] = {}
-    app._batch_subpage_label_to_key: Dict[str, str] = {}
 
     subpage_area = ctk.CTkFrame(container, fg_color=SURFACE, corner_radius=0)
     subpage_area.pack(fill="both", expand=True)
@@ -70,17 +75,26 @@ def build_batch_tab(app: "App") -> None:
     for key, label, builder in BATCH_SUBPAGES:
         frame = ctk.CTkFrame(subpage_area, fg_color=SURFACE, corner_radius=0)
         app._batch_subpages[key] = frame
-        app._batch_subpage_label_to_key[label] = key
         builder(app, frame)
 
     # Show first sub-page
-    _switch_subpage(app, labels[0])
+    _switch_subpage(app, BATCH_SUBPAGES[0][0])
 
 
-def _switch_subpage(app: "App", label: str) -> None:
-    key = app._batch_subpage_label_to_key.get(label, "")
+def _switch_subpage(app: "App", key: str) -> None:
+    app._batch_subpage_var.set(key)
     for k, frame in app._batch_subpages.items():
         if k == key:
             frame.pack(fill="both", expand=True)
+            app._batch_tab_buttons[k].configure(
+                fg_color=PRIMARY,
+                hover_color=PRIMARY_HOVER,
+                text_color=TEXT_ON_PRIMARY,
+            )
         else:
             frame.pack_forget()
+            app._batch_tab_buttons[k].configure(
+                fg_color="transparent",
+                hover_color=SURFACE_ALT,
+                text_color=TEXT_SECONDARY,
+            )

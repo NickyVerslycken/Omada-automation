@@ -29,11 +29,7 @@ def _is_wan_interface(port: Dict[str, Any], name: str) -> bool:
             return True
 
     mode_text = _text(port.get("mode")).lower()
-    mode_int = _to_int(port.get("mode"))
     if mode_text in ("wan", "internet"):
-        return True
-    if mode_int == 0:
-        # In observed payloads, mode=0 marks WAN mode on WAN/LAN combo ports.
         return True
 
     ptype_int = _to_int(port.get("type"))

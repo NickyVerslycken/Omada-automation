@@ -45,6 +45,7 @@ class VlanBatchControllerMixin:
             self.cmb_vlan_gateway.current(0)
             self._vlan_gateway_index = 0
         self._refresh_vlan_port_selection_ui()
+        self._update_vlan_push_state()
 
     # ── Port catalog from selected gateway ────────────────────────
 
@@ -68,7 +69,7 @@ class VlanBatchControllerMixin:
     def _vlan_port_label(self, port: Dict[str, Any]) -> str:
         name = self._interface_display_name(port)
         if not self._is_vlan_port_selectable(port):
-            return f"{name}\n(WAN - disabled)"
+            return f"{name}\n(not selectable)"
         return name
 
     # ── Port selection matrix UI ──────────────────────────────────
@@ -214,7 +215,7 @@ class VlanBatchControllerMixin:
         row_vars = getattr(self, "_vlan_port_row_vars", {}) or {}
         selectable_cols = [idx for idx, port in enumerate(port_catalog) if self._is_vlan_port_selectable(port)]
         if require_selection and not selectable_cols:
-            messagebox.showwarning("Missing", "No selectable port is available. WAN ports are disabled.")
+            messagebox.showwarning("Missing", "No selectable LAN port is available for this gateway.")
             return None
         mapping: Dict[int, List[str]] = {}
         for p in vlan_plan:

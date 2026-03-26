@@ -147,7 +147,7 @@ UI package split
   - `build_current_networks_tab(app)`: builds current-LAN page with CTk toolbar buttons, modern-styled Treeview in a card, and CTkTextbox raw JSON viewer.
 
 - `omada_batch/ui/tabs/batch_tab.py`
-  - `build_batch_tab(app)`: builds batch page container with CTkSegmentedButton switcher for sub-pages (Networks, VLANs). Extensible registry for future batch types.
+  - `build_batch_tab(app)`: builds batch page container with individual CTkButton tab switcher for sub-pages (Networks, VLANs). Active tab highlighted with PRIMARY blue + white text. Extensible registry for future batch types.
 
 - `omada_batch/ui/tabs/batch_networks_tab.py`
   - `build_batch_networks_subpage(app, parent)`: builds Networks sub-page with card-based parameter form, CTk action buttons, CTkProgressBar, interface selection matrix, and modern-styled plan preview Treeview.
