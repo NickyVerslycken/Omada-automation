@@ -5,6 +5,29 @@ from typing import Any, Callable, Dict, List, Optional
 import tkinter as tk
 from tkinter import ttk, messagebox
 
+import customtkinter as ctk
+
+from omada_batch.ui.theme import (
+    BORDER_LIGHT,
+    BTN_CORNER_RADIUS,
+    BTN_HEIGHT,
+    CARD_CORNER_RADIUS,
+    FONT_BODY,
+    FONT_BODY_BOLD,
+    FONT_HEADING_SM,
+    FONT_LABEL,
+    FONT_SMALL,
+    PRIMARY,
+    PRIMARY_HOVER,
+    SURFACE,
+    SURFACE_ALT,
+    SURFACE_CARD,
+    TEXT_MUTED,
+    TEXT_ON_PRIMARY,
+    TEXT_PRIMARY,
+    TEXT_SECONDARY,
+)
+
 
 def prompt_interface_selection(
     parent: tk.Misc,
@@ -16,18 +39,33 @@ def prompt_interface_selection(
         messagebox.showwarning("Missing", "No LAN interfaces are available.")
         return None
 
-    win = tk.Toplevel(parent)
-    win.title("Select LAN interfaces for networks")
+    win = ctk.CTkToplevel(parent)
+    win.title("Select LAN Interfaces")
     win.transient(parent)
     win.grab_set()
+    win.geometry("700x500")
+    win.configure(fg_color=SURFACE)
 
-    info = ttk.Label(win, text="Choose LAN interfaces per network. Top row applies to all networks.")
-    info.pack(anchor="w", padx=10, pady=(10, 6))
+    # Header
+    header = ctk.CTkFrame(win, fg_color=SURFACE_CARD, height=48, corner_radius=0)
+    header.pack(fill="x")
+    header.pack_propagate(False)
+    ctk.CTkLabel(
+        header, text="Select LAN Interfaces", font=FONT_HEADING_SM,
+        text_color=TEXT_PRIMARY,
+    ).pack(side="left", padx=16)
 
-    container = ttk.Frame(win)
-    container.pack(fill="both", expand=True, padx=10, pady=(0, 10))
+    ctk.CTkLabel(
+        win, text="Choose LAN interfaces per network. Top row applies to all networks.",
+        font=FONT_SMALL, text_color=TEXT_MUTED, anchor="w",
+    ).pack(fill="x", padx=16, pady=(12, 8))
 
-    canvas = tk.Canvas(container, highlightthickness=0)
+    # Scrollable content
+    container = ctk.CTkFrame(win, fg_color=SURFACE_CARD, corner_radius=CARD_CORNER_RADIUS,
+                              border_width=1, border_color=BORDER_LIGHT)
+    container.pack(fill="both", expand=True, padx=16, pady=(0, 8))
+
+    canvas = tk.Canvas(container, highlightthickness=0, bg=SURFACE_CARD)
     scrollbar = ttk.Scrollbar(container, orient="vertical", command=canvas.yview)
     inner = ttk.Frame(canvas)
 
@@ -38,19 +76,20 @@ def prompt_interface_selection(
     canvas.pack(side="left", fill="both", expand=True)
     scrollbar.pack(side="right", fill="y")
 
-    header = ttk.Frame(inner)
-    header.grid(row=0, column=0, sticky="w")
-    ttk.Label(header, text="Network").grid(row=0, column=0, sticky="w", padx=(0, 10))
+    # Table header
+    header_frame = ttk.Frame(inner)
+    header_frame.grid(row=0, column=0, sticky="w")
+    ttk.Label(header_frame, text="Network").grid(row=0, column=0, sticky="w", padx=(8, 10))
 
     apply_all_vars: List[tk.BooleanVar] = []
     for c, iface in enumerate(interfaces, start=1):
-        ttk.Label(header, text=display_name_fn(iface)).grid(row=0, column=c, padx=6, sticky="w")
+        ttk.Label(header_frame, text=display_name_fn(iface)).grid(row=0, column=c, padx=6, sticky="w")
 
     row_vars: Dict[int, List[tk.BooleanVar]] = {}
 
     apply_row = ttk.Frame(inner)
     apply_row.grid(row=1, column=0, sticky="w", pady=(4, 8))
-    ttk.Label(apply_row, text="Apply to all").grid(row=0, column=0, sticky="w", padx=(0, 10))
+    ttk.Label(apply_row, text="Apply to all").grid(row=0, column=0, sticky="w", padx=(8, 10))
 
     def apply_all_changed(col: int):
         val = apply_all_vars[col].get()
@@ -65,7 +104,7 @@ def prompt_interface_selection(
     for r, p in enumerate(plan, start=2):
         row = ttk.Frame(inner)
         row.grid(row=r, column=0, sticky="w", pady=2)
-        ttk.Label(row, text=f"{p.name} (VLAN {p.vlan_id})").grid(row=0, column=0, sticky="w", padx=(0, 10))
+        ttk.Label(row, text=f"{p.name} (VLAN {p.vlan_id})").grid(row=0, column=0, sticky="w", padx=(8, 10))
         vars_for_row: List[tk.BooleanVar] = []
         for c, _iface in enumerate(interfaces):
             v = tk.BooleanVar(value=True)
@@ -73,8 +112,9 @@ def prompt_interface_selection(
             ttk.Checkbutton(row, variable=v).grid(row=0, column=c + 1, padx=6)
         row_vars[p.index] = vars_for_row
 
-    btns = ttk.Frame(win)
-    btns.pack(fill="x", padx=10, pady=(0, 10))
+    # Action buttons
+    btns = ctk.CTkFrame(win, fg_color="transparent")
+    btns.pack(fill="x", padx=16, pady=(0, 12))
 
     result: Dict[str, Any] = {"ok": False, "mapping": None}
 
@@ -99,8 +139,19 @@ def prompt_interface_selection(
     def on_cancel():
         win.destroy()
 
-    ttk.Button(btns, text="Cancel", command=on_cancel).pack(side="right", padx=(6, 0))
-    ttk.Button(btns, text="OK", command=on_ok).pack(side="right")
+    ctk.CTkButton(
+        btns, text="Cancel", command=on_cancel,
+        fg_color="transparent", hover_color=SURFACE_ALT,
+        text_color=TEXT_SECONDARY, border_width=1, border_color=BORDER_LIGHT,
+        corner_radius=BTN_CORNER_RADIUS, height=BTN_HEIGHT, font=FONT_LABEL,
+    ).pack(side="right", padx=(8, 0))
+
+    ctk.CTkButton(
+        btns, text="OK", command=on_ok,
+        fg_color=PRIMARY, hover_color=PRIMARY_HOVER,
+        text_color=TEXT_ON_PRIMARY, corner_radius=BTN_CORNER_RADIUS,
+        height=BTN_HEIGHT, font=FONT_BODY_BOLD, width=80,
+    ).pack(side="right")
 
     win.wait_window()
     if result["ok"]:

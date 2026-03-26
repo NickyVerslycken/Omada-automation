@@ -46,6 +46,7 @@ Python-Omada-automation/
       background_tasks.py
       main_window.py
       state.py
+      theme.py
       controllers/
         __init__.py
         batch_controller.py

@@ -84,6 +84,11 @@ Package: `omada_batch`
 
 UI package split
 
+- `omada_batch/ui/theme.py`
+  - Centralized theme constants and helpers for the modernized UI.
+  - Color palette (PRIMARY, SURFACE, TEXT_*, etc.), font definitions, card/button sizing constants.
+  - `configure_treeview_style()`: applies modern flat styling to `ttk.Treeview` and `ttk.Combobox` widgets.
+
 - `omada_batch/ui/main_window.py`
   - Thin compatibility shim that re-exports `App` from `ui.shell.app_shell`.
 
@@ -113,31 +118,33 @@ UI package split
   - Plan export now writes JSON through changelog-aware storage helper.
 
 - `omada_batch/ui/shell/app_shell.py`
-  - `App` class (Tk root): composes mixins, owns queue/worker loop, creates notebook and tabs.
-  - Provides property adapters from legacy field names to `AppState`.
-  - Adds `Developer mode` toggle in top-right, runtime tab show/hide, and JSON event viewer methods.
+  - `App` class (CTk root): composes mixins, owns queue/worker loop, builds sidebar + header + status bar layout.
+  - Uses `customtkinter.CTk` as base class instead of `tk.Tk` for modern UI.
+  - Left sidebar navigation replaces top `ttk.Notebook` tabs. Pages show/hide via `_show_page(name)`.
+  - Header bar shows current page title. Status bar shows connection state and controller info.
+  - Developer mode toggle moved to sidebar bottom (CTkSwitch). Dynamically adds/removes dev nav item.
+  - Provides property adapters from legacy field names to `AppState` (stored as `self.app_state` to avoid conflict with CTk's `.state()` method).
   - Adds numbered-line append helpers for logs and developer JSON output.
   - Applies 250-character log line truncation with ellipsis only when truncation occurs.
-  - `_poll_queue(...)` now routes `devjson` queue events to the developer output pane.
+  - `_poll_queue(...)` routes `devjson` queue events to the developer output pane. Progress uses `CTkProgressBar.set()` API.
 
 - `omada_batch/ui/tabs/connection_tab.py`
-  - `build_connection_tab(app)`: builds connection/profile tab widgets and callbacks.
+  - `build_connection_tab(app)`: builds connection page with card-based layout (CTk widgets). Cards: Controller Profiles, Endpoint Configuration, Site Selection.
 
 - `omada_batch/ui/tabs/current_networks_tab.py`
-  - `build_current_networks_tab(app)`: builds current-LAN tab widgets and callbacks.
-  - Adds explicit vertical/horizontal scrollbars to LAN list table and vertical scrollbar to bottom raw-JSON viewer.
+  - `build_current_networks_tab(app)`: builds current-LAN page with CTk toolbar buttons, modern-styled Treeview in a card, and CTkTextbox raw JSON viewer.
 
 - `omada_batch/ui/tabs/batch_tab.py`
-  - `build_batch_tab(app)`: builds batch planning/push tab widgets and embedded LAN-interface selection matrix (canvas + scrollbars).
+  - `build_batch_tab(app)`: builds batch planning page with card-based parameter form, CTk action buttons, CTkProgressBar, interface selection matrix, and modern-styled plan preview Treeview.
 
 - `omada_batch/ui/tabs/logs_tab.py`
-  - `build_logs_tab(app)`: builds log tab widgets with vertical scrollbar and clear action.
+  - `build_logs_tab(app)`: builds log page with CTkTextbox (monospace, wrap=none) in a card and CTk clear button.
 
 - `omada_batch/ui/tabs/developer_tab.py`
-  - `build_developer_tab(app)`: builds developer JSON output tab with clear button and vertical scrollbar.
+  - `build_developer_tab(app)`: builds developer JSON page with CTkTextbox (monospace, wrap=none) in a card and CTk clear button.
 
 - `omada_batch/ui/dialogs/interface_selector.py`
-  - `prompt_interface_selection(...)`: legacy modal mapping helper retained for reference; batch flow now uses inline tab controls.
+  - `prompt_interface_selection(...)`: legacy modal mapping helper using CTkToplevel; batch flow now uses inline tab controls.
 
 - `omada_batch/ui/app.py`
   - Re-export/import shim for `App`.

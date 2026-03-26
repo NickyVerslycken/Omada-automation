@@ -63,10 +63,10 @@ class NetworksControllerMixin:
         if not self.gateways:
             self.cmb_gateways_current["values"] = []
             self.var_gateway_current.set("")
-            self.cmb_gateways_current.config(state="disabled")
+            self.cmb_gateways_current.configure(state="disabled")
             self.cmb_gateways_batch["values"] = []
             self.var_gateway_batch.set("")
-            self.cmb_gateways_batch.config(state="disabled")
+            self.cmb_gateways_batch.configure(state="disabled")
             self._q.put(("log", "No DHCP servers loaded for selected site."))
             self._apply_network_filter()
             self._update_push_state()
@@ -74,12 +74,12 @@ class NetworksControllerMixin:
 
         labels = [str(g.get("label") or g.get("name") or "") for g in self.gateways]
         self.cmb_gateways_current["values"] = ["All"] + labels
-        self.cmb_gateways_current.config(state="readonly")
+        self.cmb_gateways_current.configure(state="readonly")
         self.cmb_gateways_current.current(0)
         self.current_gateway_filter_index = -1
 
         self.cmb_gateways_batch["values"] = labels
-        self.cmb_gateways_batch.config(state="readonly")
+        self.cmb_gateways_batch.configure(state="readonly")
         self.cmb_gateways_batch.current(0)
         self.batch_gateway_index = 0
 
@@ -166,11 +166,11 @@ class NetworksControllerMixin:
         total = len(self._networks_cache_all)
         shown = len(self._networks_cache)
         if selected is None:
-            self.lbl_networks_state.config(text=f"{shown} networks loaded.")
+            self.lbl_networks_state.configure(text=f"{shown} networks loaded.")
             self._q.put(("log", f"Loaded {shown} LAN networks."))
         else:
             gname = str(selected.get("name") or selected.get("label") or "(unnamed)")
-            self.lbl_networks_state.config(text=f"{shown}/{total} networks shown (DHCP server: {gname}).")
+            self.lbl_networks_state.configure(text=f"{shown}/{total} networks shown (DHCP server: {gname}).")
             self._q.put(("log", f"Filtered networks for DHCP server {gname}: {shown}/{total} shown."))
 
     def _on_network_selected(self, _evt=None) -> None:

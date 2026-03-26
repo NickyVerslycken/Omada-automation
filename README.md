@@ -25,6 +25,7 @@ Desktop GUI application to automate Omada SDN LAN/VLAN tasks with the Omada Open
 - Python package dependencies (see `requirements.txt`):
   - `requests`
   - `tk` (note: `tkinter` is part of standard Python on many systems; Linux may need OS tkinter package).
+  - `customtkinter` (modern UI widgets library, used for the modernized GUI).
 
 ## Install
 
@@ -143,7 +144,8 @@ Then set:
 - GUI does not start:
   - Confirm virtual environment is activated.
   - Confirm `tkinter` is installed and importable.
+  - Confirm `customtkinter` is installed (`pip install customtkinter`).
 - API errors during push:
   - Check site selection and gateway selection.
   - Review the app Logs tab for detailed request/response fallback behavior.
-  - Enable Developer mode in the top right corner on the first screen to enable a tab that gives full json output of the api actions
+  - Enable Developer mode using the toggle switch at the bottom of the sidebar to enable a Developer JSON page with full API output.

@@ -11,7 +11,7 @@ from omada_batch.storage.file_change_log import write_json_with_changelog
 class BatchControllerMixin:
     def _set_batch_interface_selection_state(self, text: str) -> None:
         if hasattr(self, "lbl_batch_iface_state"):
-            self.lbl_batch_iface_state.config(text=text)
+            self.lbl_batch_iface_state.configure(text=text)
 
     def _clear_batch_interface_selection_ui(self) -> None:
         if not hasattr(self, "frm_batch_iface_inner"):
@@ -290,7 +290,7 @@ class BatchControllerMixin:
         self._log(f"Preview generated: {len(self.plan)} networks.")
         self._update_push_state()
         self._refresh_batch_interface_selection_ui()
-        self.btn_export_plan.config(state="normal" if self.plan else "disabled")
+        self.btn_export_plan.configure(state="normal" if self.plan else "disabled")
 
     def on_export_plan(self) -> None:
         if not self.plan:
@@ -378,4 +378,4 @@ class BatchControllerMixin:
 
     def _update_push_state(self) -> None:
         enabled = bool(self.client and self.selected_site_id and self._batch_gateway() and len(self.plan) > 0)
-        self.btn_push.config(state="normal" if enabled else "disabled")
+        self.btn_push.configure(state="normal" if enabled else "disabled")

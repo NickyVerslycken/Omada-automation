@@ -15,11 +15,16 @@ Runtime entry chain
 - `runners/sync_changelog_from_git.py` -> `omada_batch/storage/file_change_log.py` (synces git worktree changes to changelog).
 
 UI composition split
+- `omada_batch/ui/shell/app_shell.py` -> `customtkinter` (CTk base class and modern widgets).
+- `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/theme.py` (color/font/style constants).
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/state/app_state.py` (central state container).
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/controllers/connection_controller.py` (connection/profile/site mixin).
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/controllers/networks_controller.py` (networks/gateways mixin).
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/controllers/batch_controller.py` (plan/push mixin).
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/tabs/*.py` (tab widget builders, including developer JSON tab).
+- `omada_batch/ui/tabs/*.py` -> `customtkinter` (CTk widgets).
+- `omada_batch/ui/tabs/*.py` -> `omada_batch/ui/theme.py` (shared theme constants).
+- `omada_batch/ui/dialogs/interface_selector.py` -> `customtkinter` (CTkToplevel, CTk buttons).
 
 Controller dependencies
 - `connection_controller.py` -> `omada_batch/api/omada_client.py` (API client creation/use).
@@ -53,9 +58,9 @@ Tests
 -----------------------------------------------
 
 `omada_batch/ui/shell/app_shell.py`
-- contains class `App`.
-- orchestrates queue polling (`_poll_queue`), threaded operations (`_run_bg`), and log output (`_log`).
-- handles developer mode toggle and raw JSON output pane (`_devjson_log`, `on_toggle_developer_mode`).
+- contains class `App` (extends `customtkinter.CTk`).
+- orchestrates sidebar navigation, header/status bar, queue polling (`_poll_queue`), threaded operations (`_run_bg`), and log output (`_log`).
+- handles developer mode toggle via sidebar switch and page show/hide via `_show_page`.
 - formats log/dev-json output with numbered lines and truncation policy.
 - composes behavior by inheriting:
   - `ConnectionControllerMixin`
@@ -64,7 +69,7 @@ Tests
 
 `omada_batch/ui/state/app_state.py`
 - contains class `AppState`.
-- owned by `App` as `self.state`.
+- owned by `App` as `self.app_state` (renamed from `self.state` to avoid conflict with CTk's `.state()` method).
 - stores shared mutable fields (`client`, `sites`, `gateways`, `plan`, caches, profiles, etc.).
 
 `omada_batch/ui/controllers/connection_controller.py`

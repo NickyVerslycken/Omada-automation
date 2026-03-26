@@ -381,31 +381,38 @@ class ConnectionControllerMixin:
 
     def _on_connected(self, status) -> None:
         if status == "connected":
-            self.lbl_conn_state.config(text="Connected")
-            self.btn_refresh_sites.config(state="normal")
-            self.btn_fetch_networks.config(state="normal")
-            self.btn_export_networks.config(state="normal")
-            self.btn_preview.config(state="normal")
-            self.btn_refresh_gateways_current.config(state="normal")
-            self.btn_refresh_gateways_batch.config(state="normal")
-            self.btn_connect.config(state="normal")
-            self.btn_disconnect.config(state="normal")
+            self.lbl_conn_state.configure(text="Connected")
+            self.btn_refresh_sites.configure(state="normal")
+            self.btn_fetch_networks.configure(state="normal")
+            self.btn_export_networks.configure(state="normal")
+            self.btn_preview.configure(state="normal")
+            self.btn_refresh_gateways_current.configure(state="normal")
+            self.btn_refresh_gateways_batch.configure(state="normal")
+            self.btn_connect.configure(state="normal")
+            self.btn_disconnect.configure(state="normal")
             if self.client and self.client.omadac_id:
                 self.var_omada_id.set(self.client.omadac_id)
+            # Update status bar
+            info_parts = []
+            if self.client and self.client.omadac_id:
+                info_parts.append(f"omadacId: {self.client.omadac_id}")
+            if hasattr(self, 'var_url'):
+                info_parts.append(self.var_url.get().strip())
+            self.update_status_bar(connected=True, info_text="  |  ".join(info_parts))
             self._update_push_state()
         elif status == "refresh_buttons":
-            self.btn_connect.config(state="normal")
+            self.btn_connect.configure(state="normal")
             if self.client:
-                self.btn_refresh_sites.config(state="normal")
-                self.btn_fetch_networks.config(state="normal")
-                self.btn_export_networks.config(state="normal")
-                self.btn_preview.config(state="normal")
-                self.btn_refresh_gateways_current.config(state="normal")
-                self.btn_refresh_gateways_batch.config(state="normal")
-                self.btn_disconnect.config(state="normal")
+                self.btn_refresh_sites.configure(state="normal")
+                self.btn_fetch_networks.configure(state="normal")
+                self.btn_export_networks.configure(state="normal")
+                self.btn_preview.configure(state="normal")
+                self.btn_refresh_gateways_current.configure(state="normal")
+                self.btn_refresh_gateways_batch.configure(state="normal")
+                self.btn_disconnect.configure(state="normal")
                 self._update_push_state()
             else:
-                self.btn_disconnect.config(state="disabled")
+                self.btn_disconnect.configure(state="disabled")
                 self._update_push_state()
 
     def on_disconnect(self) -> None:
@@ -436,17 +443,18 @@ class ConnectionControllerMixin:
         for item_id in self.tree_networks.get_children():
             self.tree_networks.delete(item_id)
         self.txt_network_raw.delete("1.0", "end")
-        self.lbl_networks_state.config(text="")
+        self.lbl_networks_state.configure(text="")
 
-        self.lbl_conn_state.config(text="Not connected")
-        self.btn_refresh_sites.config(state="disabled")
-        self.btn_refresh_gateways_current.config(state="disabled")
-        self.btn_refresh_gateways_batch.config(state="disabled")
-        self.btn_fetch_networks.config(state="disabled")
-        self.btn_export_networks.config(state="disabled")
-        self.btn_preview.config(state="disabled")
-        self.btn_disconnect.config(state="disabled")
-        self.btn_connect.config(state="normal")
+        self.lbl_conn_state.configure(text="Not connected")
+        self.btn_refresh_sites.configure(state="disabled")
+        self.btn_refresh_gateways_current.configure(state="disabled")
+        self.btn_refresh_gateways_batch.configure(state="disabled")
+        self.btn_fetch_networks.configure(state="disabled")
+        self.btn_export_networks.configure(state="disabled")
+        self.btn_preview.configure(state="disabled")
+        self.btn_disconnect.configure(state="disabled")
+        self.btn_connect.configure(state="normal")
+        self.update_status_bar(connected=False, info_text="")
         self._update_push_state()
         self._q.put(("log", "Disconnected."))
 

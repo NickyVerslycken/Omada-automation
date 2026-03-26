@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Omada Batch Manager - Connection</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-variant": "#e1e2e4",
+              "on-surface": "#191c1e",
+              "on-secondary-fixed-variant": "#004e5d",
+              "secondary-fixed": "#adecff",
+              "surface-tint": "#005ac4",
+              "surface-container": "#edeef0",
+              "secondary": "#00687a",
+              "primary-container": "#0056bd",
+              "error": "#ba1a1a",
+              "on-tertiary-fixed-variant": "#005235",
+              "on-primary": "#ffffff",
+              "background": "#f8f9fb",
+              "outline-variant": "#c3c6d6",
+              "primary-fixed-dim": "#aec6ff",
+              "surface-bright": "#f8f9fb",
+              "surface-container-low": "#f3f4f6",
+              "outline": "#737685",
+              "inverse-on-surface": "#f0f1f3",
+              "on-background": "#191c1e",
+              "tertiary-container": "#006844",
+              "tertiary": "#004e32",
+              "on-secondary": "#ffffff",
+              "inverse-primary": "#aec6ff",
+              "tertiary-fixed-dim": "#65dca4",
+              "tertiary-fixed": "#82f9be",
+              "on-error": "#ffffff",
+              "inverse-surface": "#2e3132",
+              "surface-container-lowest": "#ffffff",
+              "on-secondary-fixed": "#001f26",
+              "error-container": "#ffdad6",
+              "primary-fixed": "#d8e2ff",
+              "on-tertiary": "#ffffff",
+              "on-surface-variant": "#434654",
+              "on-primary-fixed": "#001a42",
+              "on-primary-container": "#c1d3ff",
+              "surface-dim": "#d9dadc",
+              "on-tertiary-container": "#72e9af",
+              "on-primary-fixed-variant": "#004396",
+              "on-error-container": "#93000a",
+              "surface": "#f8f9fb",
+              "surface-container-highest": "#e1e2e4",
+              "primary": "#00408f",
+              "secondary-fixed-dim": "#5dd6f3",
+              "on-tertiary-fixed": "#002113",
+              "on-secondary-container": "#006374",
+              "secondary-container": "#6ae1ff",
+              "surface-container-high": "#e7e8ea"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+      }
+      h1, h2, h3 {
+        font-family: 'Manrope', sans-serif;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+      }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar Component -->
+<aside class="w-72 h-screen sticky left-0 top-0 bg-slate-100 dark:bg-slate-900 shadow-sm flex flex-col py-6">
+<div class="px-6 mb-10 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">hub</span>
+</div>
+<div>
+<div class="text-xl font-bold text-slate-900 dark:text-slate-100 leading-tight">Omada Batch</div>
+<div class="text-[10px] uppercase tracking-widest text-on-surface-variant font-bold">Manager</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="mx-4 flex items-center gap-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">settings_ethernet</span>
+<span class="text-xs font-medium uppercase tracking-wider">Networks</span>
+</a>
+<a class="mx-4 flex items-center gap-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">security</span>
+<span class="text-xs font-medium uppercase tracking-wider">ACLs</span>
+</a>
+<a class="mx-4 flex items-center gap-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="text-xs font-medium uppercase tracking-wider">Groups</span>
+</a>
+<a class="mx-4 flex items-center gap-4 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-colors duration-200" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="text-xs font-medium uppercase tracking-wider">Logs</span>
+</a>
+</nav>
+<div class="mt-auto px-8 py-4 border-l-4 border-blue-700 bg-slate-200 dark:bg-slate-800 text-blue-700 dark:text-blue-400 font-semibold flex items-center gap-4">
+<span class="material-symbols-outlined">cloud_sync</span>
+<span class="text-xs font-medium uppercase tracking-wider">Connection</span>
+</div>
+</aside>
+<main class="flex-1 flex flex-col overflow-hidden">
+<!-- TopNavBar Component -->
+<header class="w-full h-16 sticky top-0 z-40 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200/15 dark:border-slate-800/15 shadow-sm flex justify-between items-center px-8">
+<div class="flex items-center gap-4">
+<h1 class="text-lg font-black tracking-tight text-blue-800 dark:text-blue-400 uppercase">Connection Manager</h1>
+<div class="h-4 w-[1px] bg-outline-variant/30 mx-2"></div>
+<div class="flex items-center gap-2 px-3 py-1 bg-error-container text-on-error-container rounded-full">
+<span class="material-symbols-outlined text-sm">cloud_off</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Disconnected</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-5 py-2 text-xs font-bold uppercase tracking-widest text-primary hover:text-blue-600 transition-all">Generate Preview</button>
+<button class="bg-gradient-to-br from-primary to-primary-container px-6 py-2 rounded-md text-on-primary text-xs font-bold uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">Push to Controller</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<div class="p-10 max-w-6xl w-full mx-auto space-y-10">
+<!-- Connection Setup Hero -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+<div class="lg:col-span-8 space-y-10">
+<!-- Controller Profiles Section -->
+<div class="bg-surface-container-low rounded-xl p-8 space-y-6">
+<div class="flex justify-between items-end">
+<div>
+<h2 class="text-xl font-bold text-on-surface leading-none mb-1">Controller Profiles</h2>
+<p class="text-sm text-on-surface-variant font-medium">Manage and switch between saved Omada environments.</p>
+</div>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-high rounded-lg transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">file_download</span>
+</button>
+<button class="p-2 hover:bg-surface-container-high rounded-lg transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">file_upload</span>
+</button>
+</div>
+</div>
+<div class="flex gap-4 items-center">
+<div class="relative flex-1">
+<select class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/20 rounded-lg px-4 py-3 text-sm focus:ring-primary focus:ring-2 transition-all appearance-none cursor-pointer">
+<option>Select a profile...</option>
+<option>Production - North America</option>
+<option>Staging - Lab Cluster</option>
+<option>Cloud Controller 01</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">expand_more</span>
+</div>
+<button class="bg-surface-container-highest px-6 py-3 rounded-lg text-xs font-bold uppercase tracking-widest text-on-surface hover:bg-surface-variant transition-colors">
+                                Save Profile
+                            </button>
+</div>
+</div>
+<!-- Endpoint Configuration -->
+<div class="bg-surface-container-low rounded-xl p-8 space-y-8">
+<div>
+<h2 class="text-xl font-bold text-on-surface leading-none mb-1">Endpoint Configuration</h2>
+<p class="text-sm text-on-surface-variant font-medium">Authentication details for the Omada API Gateway.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant px-1">Controller Base URL</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/20 rounded-lg px-4 py-3 text-sm focus:ring-primary focus:ring-2 transition-all font-mono" placeholder="https://omada.tplinkcloud.com" type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-sm">link</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant px-1">Omada ID / Organization ID</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/20 rounded-lg px-4 py-3 text-sm focus:ring-primary focus:ring-2 transition-all font-mono" placeholder="ORG-29384-XX" type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-sm">corporate_fare</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant px-1">Client ID</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/20 rounded-lg px-4 py-3 text-sm focus:ring-primary focus:ring-2 transition-all font-mono" placeholder="••••••••••••••••" type="text"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-sm">key</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-[10px] font-black uppercase tracking-widest text-on-surface-variant px-1">Client Secret</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-none ring-1 ring-outline-variant/20 rounded-lg px-4 py-3 text-sm focus:ring-primary focus:ring-2 transition-all font-mono" placeholder="••••••••••••••••" type="password"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-sm">lock</span>
+</div>
+</div>
+</div>
+<div class="pt-4 flex gap-4 border-t border-outline-variant/10">
+<button class="flex-1 bg-gradient-to-r from-primary to-primary-container h-14 rounded-lg text-on-primary font-bold uppercase tracking-[0.2em] shadow-xl shadow-primary/30 flex items-center justify-center gap-3 hover:opacity-90 transition-all active:scale-[0.98]">
+<span class="material-symbols-outlined">bolt</span>
+                                Connect to Omada
+                            </button>
+<button class="px-8 bg-surface-container-highest text-on-surface-variant font-bold uppercase tracking-widest text-xs rounded-lg hover:bg-error-container hover:text-on-error-container transition-all">
+                                Disconnect
+                            </button>
+</div>
+</div>
+</div>
+<!-- Right Sidebar / Secondary Actions -->
+<div class="lg:col-span-4 space-y-10">
+<!-- Site Selection - Inactive State -->
+<div class="bg-surface-container-low rounded-xl p-8 border-2 border-dashed border-outline-variant/20 opacity-60">
+<div class="mb-6">
+<div class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-outline">location_on</span>
+</div>
+<h3 class="text-lg font-bold text-on-surface">Site Selection</h3>
+<p class="text-xs text-on-surface-variant mt-2 leading-relaxed">Connect to a controller first to fetch available sites for batch operations.</p>
+</div>
+<div class="relative">
+<select class="w-full bg-surface-container-highest border-none rounded-lg px-4 py-3 text-sm appearance-none cursor-not-allowed text-on-surface-variant/50" disabled="">
+<option>Awaiting Connection...</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant/30">lock</span>
+</div>
+</div>
+<!-- Connection Status & Info -->
+<div class="glass-card rounded-xl p-8 border border-white/40 shadow-sm space-y-6">
+<h3 class="text-xs font-black uppercase tracking-widest text-primary">Connection Log</h3>
+<div class="space-y-4 font-mono text-[11px]">
+<div class="flex gap-3 text-on-surface-variant">
+<span class="text-outline/50">[14:20:01]</span>
+<span>Application initialized.</span>
+</div>
+<div class="flex gap-3 text-on-surface-variant">
+<span class="text-outline/50">[14:20:05]</span>
+<span>No active credentials found in cache.</span>
+</div>
+<div class="flex gap-3 text-error">
+<span class="opacity-50">[14:21:12]</span>
+<span>System: Ready for user authentication.</span>
+</div>
+</div>
+<div class="pt-6 border-t border-outline-variant/10">
+<div class="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-on-surface-variant">
+<span>API Version</span>
+<span class="text-on-surface">v5.12.0 (Stable)</span>
+</div>
+</div>
+</div>
+<div class="relative rounded-xl overflow-hidden aspect-[4/3] group">
+<img alt="Datacenter Infrastructure" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Modern server room with glowing blue led lights on networking equipment in a clean professional data center environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw65DanhU5sHdLRttMxQ0RXBY02ngVbRvp1HmSKsnYhBhcn4fWzW2ueCZXhB_FlAShy1McERwOiPnEIJ0mTyaEu7-4HHoCQiHywheCRZ_es36QivX5vsgTq3GL-hhaGpM7GQKG5X-DGmq94wngfCVmcB_7nOQdUv5mVQlv6D39mjvteIqzSqQ4TOdpSImdyXRniSNhzv0nDbPO9GiMQpksvp0D4lEHPvWZm6f_uVEIR4pB9F2_lYVSdq77NWrn5jIE7s48AMX0EUyu"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent flex flex-col justify-end p-6">
+<p class="text-white text-[10px] font-black uppercase tracking-[0.2em] mb-1">Global Infrastructure</p>
+<p class="text-white/80 text-xs leading-relaxed">Managing networks across 14 geographical regions with high-availability clustering.</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</body></html>

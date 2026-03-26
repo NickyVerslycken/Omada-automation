@@ -1,7 +1,7 @@
 ﻿Python-Omada-automation/ (with file line counts)
   AGENTS.md (lines: 53)
-  README.md (lines: 108)
-  requirements.txt (lines: 2)
+  README.md (lines: 151)
+  requirements.txt (lines: 3)
   start-omada-app.pyw (lines: 5)
   archive/
   backup/
@@ -46,27 +46,28 @@
       background_tasks.py (lines: 2)
       main_window.py (lines: 3)
       state.py (lines: 2)
+      theme.py (lines: 137)
       controllers/
         __init__.py (lines: 9)
-        batch_controller.py (lines: 331)
-        connection_controller.py (lines: 431)
-        networks_controller.py (lines: 275)
+        batch_controller.py (lines: 381)
+        connection_controller.py (lines: 495)
+        networks_controller.py (lines: 313)
       shell/
         __init__.py (lines: 3)
-        app_shell.py (lines: 217)
+        app_shell.py (lines: 508)
       state/
         __init__.py (lines: 3)
         app_state.py (lines: 20)
       dialogs/
         __init__.py (lines: 0)
-        interface_selector.py (lines: 85)
+        interface_selector.py (lines: 159)
       tabs/
         __init__.py (lines: 13)
-        batch_tab.py (lines: 107)
-        connection_tab.py (lines: 65)
-        current_networks_tab.py (lines: 57)
-        developer_tab.py (lines: 19)
-        logs_tab.py (lines: 20)
+        batch_tab.py (lines: 246)
+        connection_tab.py (lines: 240)
+        current_networks_tab.py (lines: 135)
+        developer_tab.py (lines: 49)
+        logs_tab.py (lines: 55)
     utils/
       __init__.py (lines: 0)
       formatters.py (lines: 2)
