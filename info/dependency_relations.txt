@@ -21,6 +21,7 @@ UI composition split
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/controllers/connection_controller.py` (connection/profile/site mixin).
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/controllers/networks_controller.py` (networks/gateways mixin).
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/controllers/batch_controller.py` (plan/push mixin).
+- `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/controllers/vlan_batch_controller.py` (VLAN batch plan/push mixin).
 - `omada_batch/ui/shell/app_shell.py` -> `omada_batch/ui/tabs/*.py` (tab widget builders, including developer JSON tab).
 - `omada_batch/ui/tabs/*.py` -> `customtkinter` (CTk widgets).
 - `omada_batch/ui/tabs/*.py` -> `omada_batch/ui/theme.py` (shared theme constants).
@@ -36,10 +37,11 @@ Controller dependencies
 - `networks_controller.py` -> `omada_batch/storage/file_change_log.py` (network export JSON writes with changelog).
 - `batch_controller.py` -> `omada_batch/services/planner.py` (plan generation).
 - `batch_controller.py` -> `omada_batch/storage/file_change_log.py` (plan export JSON writes with changelog).
+- `vlan_batch_controller.py` -> `omada_batch/services/planner.py` (VLAN plan generation).
 
 Service/model/storage dependencies
-- `omada_batch/api/omada_client.py` -> `omada_batch/models/lan.py` (`create_lan_network` input type).
-- `omada_batch/services/planner.py` -> `omada_batch/models/lan.py` (creates `PlannedLan`).
+- `omada_batch/api/omada_client.py` -> `omada_batch/models/lan.py` (`create_lan_network` and `create_vlan_network` input types).
+- `omada_batch/services/planner.py` -> `omada_batch/models/lan.py` (creates `PlannedLan` and `PlannedVlan`).
 - `omada_batch/services/profile_service.py` -> `omada_batch/config.py` (default env variable names and fallback behavior for profile credential references).
 - `omada_batch/storage/profile_store.py` -> `omada_batch/config.py` (data paths).
 - `omada_batch/storage/profile_store.py` -> `omada_batch/storage/file_change_log.py` (changelog-aware profile persistence).
@@ -66,6 +68,7 @@ Tests
   - `ConnectionControllerMixin`
   - `NetworksControllerMixin`
   - `BatchControllerMixin`
+  - `VlanBatchControllerMixin`
 
 `omada_batch/ui/state/app_state.py`
 - contains class `AppState`.
@@ -91,9 +94,15 @@ Tests
 `omada_batch/ui/controllers/batch_controller.py`
 - contains class `BatchControllerMixin`.
 - handles plan generation, preview export, push loop, and push-button enablement state.
-- manages inline per-network interface/port selection table in Batch Create tab (replacing popup selection).
+- manages inline per-network interface/port selection table in Batch Create > Networks sub-page (replacing popup selection).
 - consumes WAN/selectable metadata from interface catalog and blocks WAN port selection in UI + payload mapping.
 - uses changelog-aware JSON writer when exporting batch plans.
+
+`omada_batch/ui/controllers/vlan_batch_controller.py`
+- contains class `VlanBatchControllerMixin`.
+- handles VLAN-only batch plan generation, gateway port selection, and push loop via `/networks/confirm` endpoint.
+- manages inline per-VLAN port selection table in Batch Create > VLANs sub-page.
+- uses gateway device MAC and port IDs for VLAN network creation without DHCP.
 
 `omada_batch/storage/file_change_log.py`
 - contains changelog helpers for create/edit/delete filesystem events.
@@ -106,6 +115,9 @@ Tests
 `omada_batch/ui/tabs/*.py`
 - contains pure view-builder functions.
 - each `build_*_tab(app)` creates widgets and wires callbacks to controller methods.
+- `batch_tab.py` hosts a segmented button switcher for batch sub-pages (Networks, VLANs, extensible for future types).
+- `batch_networks_tab.py` contains the Networks sub-page (LAN creation with DHCP).
+- `batch_vlan_tab.py` contains the VLANs sub-page (VLAN creation without DHCP).
 
 `omada_batch/api/omada_client.py`
 - contains class `OmadaOpenApiClient`, used by connection and batch workflows.
@@ -133,10 +145,15 @@ Gateway/network flow
 2. Device list -> `get_device_port_details` enrichment -> `build_interface_catalog` -> gateway combos.
 3. Network list -> `_apply_network_filter` based on gateway/device/interface matches.
 
-Batch flow
+Batch Networks flow
 1. Batch parameters -> `generate_plan` -> `AppState.plan`.
-2. Interface mapping configured inline in Batch Create tab with WAN ports visible but disabled.
+2. Interface mapping configured inline in Batch Create > Networks sub-page with WAN ports visible but disabled.
 3. Per-plan push -> `OmadaOpenApiClient.create_lan_network`.
+
+Batch VLANs flow
+1. VLAN parameters -> `generate_vlan_plan` -> `AppState.vlan_plan`.
+2. Port mapping configured inline in Batch Create > VLANs sub-page per gateway device.
+3. Per-plan push -> `OmadaOpenApiClient.create_vlan_network` via `/networks/confirm`.
 
 4) Dependency characteristics
 -----------------------------

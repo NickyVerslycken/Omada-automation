@@ -5,7 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import requests
 
-from omada_batch.models.lan import PlannedLan
+from omada_batch.models.lan import PlannedLan, PlannedVlan
 
 
 class OmadaOpenApiClient:
@@ -546,6 +546,7 @@ class OmadaOpenApiClient:
         plan: PlannedLan,
         gateway_device: Optional[str] = None,
         interface_ids: Optional[List[str]] = None,
+        dhcp_enabled: bool = True,
     ) -> Dict[str, Any]:
         if not self.omadac_id:
             raise RuntimeError("omadacId unknown.")
@@ -567,19 +568,24 @@ class OmadaOpenApiClient:
             f"{net_addr}/{mask}",
         ]
 
+        if dhcp_enabled:
+            dhcp_settings: Dict[str, Any] = {
+                "enable": True,
+                "ipRangePool": [{"ipaddrStart": str(plan.dhcp_start), "ipaddrEnd": str(plan.dhcp_end)}],
+                "dhcpns": "auto",
+                "leasetime": 1440,
+                "gateway": gw_ip,
+            }
+        else:
+            dhcp_settings = {"enable": False}
+
         base_body: Dict[str, Any] = {
             "name": plan.name,
             "purpose": 1,
             "vlanType": 0,
             "vlan": plan.vlan_id,
             "application": 0,
-            "dhcpSettingsVO": {
-                "enable": True,
-                "ipRangePool": [{"ipaddrStart": str(plan.dhcp_start), "ipaddrEnd": str(plan.dhcp_end)}],
-                "dhcpns": "auto",
-                "leasetime": 1440,
-                "gateway": gw_ip,
-            },
+            "dhcpSettingsVO": dhcp_settings,
             "igmpSnoopEnable": True,
             "mldSnoopEnable": False,
             "dhcpL2RelayEnable": False,
@@ -672,3 +678,101 @@ class OmadaOpenApiClient:
         if last_err is not None:
             return {"errorCode": -1, "msg": f"Create LAN failed on all endpoint candidates: {last_err}"}
         return {"errorCode": -1, "msg": "Unknown error creating LAN network"}
+
+    def create_vlan_network(
+        self,
+        site_id: str,
+        plan: PlannedVlan,
+        device_mac: str,
+        device_type: int,
+        port_ids: List[str],
+    ) -> Dict[str, Any]:
+        """Create a VLAN-only network (no DHCP) via the /networks/confirm endpoint.
+
+        Uses the 3-step flow observed in the controller web UI:
+        param-check -> check -> confirm. We skip param-check and check for speed,
+        sending directly to confirm. Falls back across v3/v2/v1.
+
+        Args:
+            site_id: Omada site ID.
+            plan: PlannedVlan with name and vlan_id.
+            device_mac: MAC address of the gateway device (e.g. "24-2F-D0-4E-1E-BB").
+            device_type: Device type integer (1 = gateway).
+            port_ids: List of port IDs on the device (e.g. ["2_bb7b89...", "4_bdb037..."]).
+        """
+        if not self.omadac_id:
+            raise RuntimeError("omadacId unknown.")
+
+        lan_network_body: Dict[str, Any] = {
+            "name": plan.name,
+            "deviceType": 3,
+            "vlanType": 0,
+            "vlan": plan.vlan_id,
+            "upnpLanEnable": False,
+            "igmpSnoopEnable": False,
+            "dhcpGuard": {"enable": False},
+            "dhcpv6Guard": {"enable": False},
+            "qosQueueEnable": False,
+            "mldSnoopEnable": False,
+            "dhcpL2RelayEnable": False,
+        }
+
+        device_config_body: Dict[str, Any] = {
+            "portIsolationEnable": False,
+            "flowControlEnable": False,
+            "deviceList": [
+                {
+                    "mac": device_mac,
+                    "type": device_type,
+                    "ports": list(port_ids),
+                    "lags": [],
+                },
+            ],
+            "tagIds": [],
+        }
+
+        confirm_body: Dict[str, Any] = {
+            "deviceConfig": device_config_body,
+            "lanNetwork": lan_network_body,
+        }
+
+        endpoint_candidates = [
+            ("v3", f"{self.base_url}/openapi/v3/{self.omadac_id}/sites/{site_id}/networks/confirm"),
+            ("v2", f"{self.base_url}/openapi/v2/{self.omadac_id}/sites/{site_id}/networks/confirm"),
+            ("v1", f"{self.base_url}/openapi/v1/{self.omadac_id}/sites/{site_id}/networks/confirm"),
+        ]
+
+        last_data: Optional[Dict[str, Any]] = None
+        last_err: Optional[Exception] = None
+        for api_ver, url in endpoint_candidates:
+            self.log(f"Trying POST {url.replace(self.base_url, '')} (create vlan {api_ver}) ...")
+            self.log(
+                f"POST {url.replace(self.base_url, '')} (create vlan {api_ver}) "
+                f"(name={plan.name}, vlan={plan.vlan_id}, device={device_mac}, ports={len(port_ids)})"
+            )
+            try:
+                data = self._req("POST", url, headers=self._auth_headers(), json_body=confirm_body)
+            except Exception as exc:
+                last_err = exc
+                self.log(f"FAILED POST {url.replace(self.base_url, '')} (create vlan {api_ver}): {exc}")
+                continue
+            last_data = data
+            if data.get("errorCode") == 0:
+                self.log(f"SUCCESS POST {url.replace(self.base_url, '')} (create vlan {api_ver})")
+                return data
+            if data.get("errorCode") == -1600:
+                self.log(
+                    f"FAILED POST {url.replace(self.base_url, '')} (create vlan {api_ver}): "
+                    f"{data.get('errorCode')} {data.get('msg')}"
+                )
+                continue
+            self.log(
+                f"FAILED POST {url.replace(self.base_url, '')} (create vlan {api_ver}): "
+                f"{data.get('errorCode')} {data.get('msg')}"
+            )
+            return data
+        if last_data is not None:
+            return last_data
+        if last_err is not None:
+            return {"errorCode": -1, "msg": f"Create VLAN failed on all endpoint candidates: {last_err}"}
+        return {"errorCode": -1, "msg": "Unknown error creating VLAN network"}

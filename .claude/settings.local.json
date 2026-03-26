@@ -4,7 +4,14 @@
       "Bash(\"C:/Dev/Omada-automation/backup/file_changelog.jsonl\":*)",
       "Bash(\"c:/Dev/Omada-automation/backup/file_changelog.jsonl\":*)",
       "Bash(timeout 8 python -c \":*)",
-      "Bash(backup/file_changelog.jsonl:*)"
+      "Bash(backup/file_changelog.jsonl:*)",
+      "Bash(python -m pytest tests/ -v)",
+      "Bash(source .venv/Scripts/activate)",
+      "Bash(ls c:/Dev/Omada-automation/.venv/Scripts/activate*)",
+      "Bash(ls c:/Dev/Omada-automation/.venv/bin/activate*)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"from omada_batch.ui.shell.app_shell import App; print\\(''Import OK''\\)\")",
+      "Bash(python -c \":*)"
     ]
   }
 }

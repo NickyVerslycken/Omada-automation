@@ -52,6 +52,7 @@ Python-Omada-automation/
         batch_controller.py
         connection_controller.py
         networks_controller.py
+        vlan_batch_controller.py
       shell/
         __init__.py
         app_shell.py
@@ -64,6 +65,8 @@ Python-Omada-automation/
       tabs/
         __init__.py
         batch_tab.py
+        batch_networks_tab.py
+        batch_vlan_tab.py
         connection_tab.py
         current_networks_tab.py
         developer_tab.py

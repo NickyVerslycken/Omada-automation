@@ -12,7 +12,7 @@ from tkinter import messagebox, ttk
 import customtkinter as ctk
 
 from omada_batch.storage.profile_store import ProfileStore
-from omada_batch.ui.controllers import BatchControllerMixin, ConnectionControllerMixin, NetworksControllerMixin
+from omada_batch.ui.controllers import BatchControllerMixin, ConnectionControllerMixin, NetworksControllerMixin, VlanBatchControllerMixin
 from omada_batch.ui.state import AppState
 from omada_batch.ui.tabs import (
     build_batch_tab,
@@ -65,7 +65,7 @@ NAV_ITEMS = [
 DEV_NAV_ITEM = ("devjson", "Developer JSON", "\U0001F527")  # 🔧
 
 
-class App(ctk.CTk, ConnectionControllerMixin, NetworksControllerMixin, BatchControllerMixin):
+class App(ctk.CTk, ConnectionControllerMixin, NetworksControllerMixin, BatchControllerMixin, VlanBatchControllerMixin):
     def __init__(self):
         super().__init__()
         self.title("Omada Batch Manager")
@@ -150,6 +150,22 @@ class App(ctk.CTk, ConnectionControllerMixin, NetworksControllerMixin, BatchCont
     @plan_interface_ids.setter
     def plan_interface_ids(self, value):
         self.app_state.plan_interface_ids = value
+
+    @property
+    def vlan_plan(self):
+        return self.app_state.vlan_plan
+
+    @vlan_plan.setter
+    def vlan_plan(self, value):
+        self.app_state.vlan_plan = value
+
+    @property
+    def vlan_plan_port_ids(self):
+        return self.app_state.vlan_plan_port_ids
+
+    @vlan_plan_port_ids.setter
+    def vlan_plan_port_ids(self, value):
+        self.app_state.vlan_plan_port_ids = value
 
     @property
     def controller_profiles(self):
@@ -476,6 +492,11 @@ class App(ctk.CTk, ConnectionControllerMixin, NetworksControllerMixin, BatchCont
                     max_val = max(total, 1)
                     self.prog.set(done / max_val)
                     self.lbl_batch_state.configure(text=text)
+                elif typ == "vlan_progress":
+                    done, total, text = payload
+                    max_val = max(total, 1)
+                    self.vlan_prog.set(done / max_val)
+                    self.lbl_vlan_batch_state.configure(text=text)
                 elif typ == "devjson":
                     self._devjson_log(payload)
                 elif typ == "error":

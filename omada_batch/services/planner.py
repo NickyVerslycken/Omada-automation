@@ -3,7 +3,7 @@ from __future__ import annotations
 import ipaddress
 from typing import List, Tuple
 
-from omada_batch.models.lan import PlannedLan
+from omada_batch.models.lan import PlannedLan, PlannedVlan
 
 
 def generate_plan(
@@ -67,5 +67,28 @@ def generate_plan(
                 dhcp_end=de,
             )
         )
+
+    return plans, warnings
+
+
+def generate_vlan_plan(
+    name_prefix: str,
+    start_vlan: int,
+    count: int,
+) -> Tuple[List[PlannedVlan], List[str]]:
+    warnings: List[str] = []
+
+    if count <= 0:
+        raise ValueError("Number of VLANs must be > 0")
+    if start_vlan < 1 or start_vlan > 4090:
+        raise ValueError("Start VLAN must be 1..4090")
+    if start_vlan + count - 1 > 4090:
+        raise ValueError("VLAN range exceeds 4090 (controller API limit)")
+
+    plans: List[PlannedVlan] = []
+    for i in range(count):
+        vlan = start_vlan + i
+        name = f"{name_prefix}-{vlan}"
+        plans.append(PlannedVlan(index=i + 1, name=name, vlan_id=vlan))
 
     return plans, warnings

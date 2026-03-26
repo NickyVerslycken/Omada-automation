@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from omada_batch.api.omada_client import OmadaOpenApiClient
-from omada_batch.models.lan import PlannedLan
+from omada_batch.models.lan import PlannedLan, PlannedVlan
 from omada_batch.storage.profile_store import ProfileStore
 
 
@@ -18,6 +18,8 @@ class AppState:
     batch_gateway_index: int = -1
     plan: List[PlannedLan] = field(default_factory=list)
     plan_interface_ids: Dict[int, List[str]] = field(default_factory=dict)
+    vlan_plan: List[PlannedVlan] = field(default_factory=list)
+    vlan_plan_port_ids: Dict[int, List[str]] = field(default_factory=dict)
     controller_profiles: List[Dict[str, Any]] = field(default_factory=list)
     networks_cache_all: List[Dict[str, Any]] = field(default_factory=list)
     networks_cache: List[Dict[str, Any]] = field(default_factory=list)

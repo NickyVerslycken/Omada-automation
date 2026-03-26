@@ -140,8 +140,10 @@ class BatchControllerMixin:
 
         gateway = self._batch_gateway()
         if not gateway:
-            self.plan_interface_ids = {}
-            self._set_batch_interface_selection_state("Select a DHCP server first to configure LAN interfaces.")
+            self.plan_interface_ids = {p.index: [] for p in self.plan}
+            self._set_batch_interface_selection_state(
+                "DHCP disabled \u2014 no interface selection needed. Networks will be created without DHCP server."
+            )
             return
 
         iface_catalog = self._resolve_batch_interface_catalog()
@@ -330,30 +332,35 @@ class BatchControllerMixin:
         if not self.client or not self.selected_site_id:
             messagebox.showwarning("Missing", "Connect and select a site first.")
             return
-        gateway = self._batch_gateway()
-        if not gateway:
-            messagebox.showwarning("Missing", "Select a DHCP server for this site first (Refresh DHCP servers).")
-            return
         if not self.plan:
             messagebox.showwarning("Missing", "Generate a preview first.")
             return
 
-        mapping = self._collect_batch_interface_selection_mapping(require_selection=True)
-        if mapping is None:
-            self._set_batch_interface_selection_state("Please complete interface selection in this tab before pushing.")
-            return
+        gateway = self._batch_gateway()
+        dhcp_enabled = gateway is not None
+
+        if dhcp_enabled:
+            mapping = self._collect_batch_interface_selection_mapping(require_selection=True)
+            if mapping is None:
+                self._set_batch_interface_selection_state("Please complete interface selection in this tab before pushing.")
+                return
+        else:
+            mapping = {p.index: [] for p in self.plan}
         self.plan_interface_ids = mapping
 
-        if not messagebox.askyesno("Confirm push", f"This will create {len(self.plan)} LAN networks.\n\nContinue?"):
+        dhcp_text = "with DHCP enabled" if dhcp_enabled else "without DHCP (no DHCP server)"
+        if not messagebox.askyesno("Confirm push", f"This will create {len(self.plan)} LAN networks {dhcp_text}.\n\nContinue?"):
             return
 
         def work():
             assert self.client
             site_id = self.selected_site_id
             assert site_id
-            gateway_name = str(gateway.get("name") or "")
-            assert gateway_name
-            gateway_device = str(gateway.get("device_id") or gateway.get("value") or gateway_name)
+            if gateway:
+                gateway_name = str(gateway.get("name") or "")
+                gateway_device = str(gateway.get("device_id") or gateway.get("value") or gateway_name)
+            else:
+                gateway_device = None
 
             total_steps = len(self.plan)
             done = 0
@@ -365,6 +372,7 @@ class BatchControllerMixin:
                     p,
                     gateway_device=gateway_device,
                     interface_ids=(iface_ids or None),
+                    dhcp_enabled=dhcp_enabled,
                 )
                 if resp.get("errorCode") != 0:
                     raise RuntimeError(f"Create LAN failed for {p.name}: {resp.get('errorCode')} {resp.get('msg')}")
@@ -377,5 +385,5 @@ class BatchControllerMixin:
         self._run_bg(work, disable_buttons=[self.btn_push])
 
     def _update_push_state(self) -> None:
-        enabled = bool(self.client and self.selected_site_id and self._batch_gateway() and len(self.plan) > 0)
+        enabled = bool(self.client and self.selected_site_id and len(self.plan) > 0)
         self.btn_push.configure(state="normal" if enabled else "disabled")

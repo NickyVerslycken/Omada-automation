@@ -33,7 +33,10 @@ class NetworksControllerMixin:
             gateways = self._build_interface_catalog(devices)
             self._q.put(("gateways", gateways))
 
-        self._run_bg(work, disable_buttons=[self.btn_refresh_gateways_current, self.btn_refresh_gateways_batch])
+        disable = [self.btn_refresh_gateways_current, self.btn_refresh_gateways_batch]
+        if hasattr(self, "btn_vlan_refresh_gateways"):
+            disable.append(self.btn_vlan_refresh_gateways)
+        self._run_bg(work, disable_buttons=disable)
 
     def _build_interface_catalog(self, devices: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         return build_interface_catalog(devices)
@@ -70,6 +73,8 @@ class NetworksControllerMixin:
             self._q.put(("log", "No DHCP servers loaded for selected site."))
             self._apply_network_filter()
             self._update_push_state()
+            if hasattr(self, "_on_vlan_gateways_refreshed"):
+                self._on_vlan_gateways_refreshed()
             return
 
         labels = [str(g.get("label") or g.get("name") or "") for g in self.gateways]
@@ -78,16 +83,18 @@ class NetworksControllerMixin:
         self.cmb_gateways_current.current(0)
         self.current_gateway_filter_index = -1
 
-        self.cmb_gateways_batch["values"] = labels
+        self.cmb_gateways_batch["values"] = ["None"] + labels
         self.cmb_gateways_batch.configure(state="readonly")
         self.cmb_gateways_batch.current(0)
-        self.batch_gateway_index = 0
+        self.batch_gateway_index = -1  # -1 = "None" (no DHCP server)
 
         self._apply_network_filter()
         self._q.put(("log", f"Loaded {len(self.gateways)} DHCP servers for selected site."))
         self._q.put(("log", f"Batch DHCP server={self._batch_gateway_name() or '(none)'}"))
         self._update_push_state()
         self._refresh_batch_interface_selection_ui()
+        if hasattr(self, "_on_vlan_gateways_refreshed"):
+            self._on_vlan_gateways_refreshed()
 
     def _current_gateway(self) -> Optional[Dict[str, Any]]:
         idx = self.current_gateway_filter_index
@@ -119,10 +126,12 @@ class NetworksControllerMixin:
 
     def on_gateway_selected_batch(self, _evt=None) -> None:
         idx = self.cmb_gateways_batch.current()
-        self.batch_gateway_index = idx
+        self.batch_gateway_index = idx - 1  # offset: 0="None"->-1, 1+->gateway index
         gateway = self._batch_gateway()
         if gateway:
             self._q.put(("log", f"Batch DHCP server={gateway.get('name') or gateway.get('label') or '(unnamed)'}"))
+        else:
+            self._q.put(("log", "Batch DHCP server=None (DHCP disabled)"))
         self._update_push_state()
         self._refresh_batch_interface_selection_ui()
 

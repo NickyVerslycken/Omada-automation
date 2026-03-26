@@ -388,6 +388,10 @@ class ConnectionControllerMixin:
             self.btn_preview.configure(state="normal")
             self.btn_refresh_gateways_current.configure(state="normal")
             self.btn_refresh_gateways_batch.configure(state="normal")
+            if hasattr(self, "btn_vlan_preview"):
+                self.btn_vlan_preview.configure(state="normal")
+            if hasattr(self, "btn_vlan_refresh_gateways"):
+                self.btn_vlan_refresh_gateways.configure(state="normal")
             self.btn_connect.configure(state="normal")
             self.btn_disconnect.configure(state="normal")
             if self.client and self.client.omadac_id:
@@ -400,6 +404,8 @@ class ConnectionControllerMixin:
                 info_parts.append(self.var_url.get().strip())
             self.update_status_bar(connected=True, info_text="  |  ".join(info_parts))
             self._update_push_state()
+            if hasattr(self, "_update_vlan_push_state"):
+                self._update_vlan_push_state()
         elif status == "refresh_buttons":
             self.btn_connect.configure(state="normal")
             if self.client:
@@ -409,8 +415,14 @@ class ConnectionControllerMixin:
                 self.btn_preview.configure(state="normal")
                 self.btn_refresh_gateways_current.configure(state="normal")
                 self.btn_refresh_gateways_batch.configure(state="normal")
+                if hasattr(self, "btn_vlan_preview"):
+                    self.btn_vlan_preview.configure(state="normal")
+                if hasattr(self, "btn_vlan_refresh_gateways"):
+                    self.btn_vlan_refresh_gateways.configure(state="normal")
                 self.btn_disconnect.configure(state="normal")
                 self._update_push_state()
+                if hasattr(self, "_update_vlan_push_state"):
+                    self._update_vlan_push_state()
             else:
                 self.btn_disconnect.configure(state="disabled")
                 self._update_push_state()
@@ -453,9 +465,17 @@ class ConnectionControllerMixin:
         self.btn_export_networks.configure(state="disabled")
         self.btn_preview.configure(state="disabled")
         self.btn_disconnect.configure(state="disabled")
+        if hasattr(self, "btn_vlan_preview"):
+            self.btn_vlan_preview.configure(state="disabled")
+        if hasattr(self, "btn_vlan_push"):
+            self.btn_vlan_push.configure(state="disabled")
+        if hasattr(self, "btn_vlan_refresh_gateways"):
+            self.btn_vlan_refresh_gateways.configure(state="disabled")
         self.btn_connect.configure(state="normal")
         self.update_status_bar(connected=False, info_text="")
         self._update_push_state()
+        if hasattr(self, "_update_vlan_push_state"):
+            self._update_vlan_push_state()
         self._q.put(("log", "Disconnected."))
 
     def on_refresh_sites(self) -> None:

@@ -13,3 +13,10 @@ class PlannedLan:
     gateway: ipaddress.IPv4Address
     dhcp_start: ipaddress.IPv4Address
     dhcp_end: ipaddress.IPv4Address
+
+
+@dataclass(frozen=True)
+class PlannedVlan:
+    index: int
+    name: str
+    vlan_id: int

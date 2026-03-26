@@ -13,9 +13,10 @@
     controller_profiles.json.example (lines: 22)
   exports/
   info/
+    controller-create-vlan.har (lines: 2329)
     file_structure.txt (lines: 82)
     file_structure_with_loc.txt (lines: 148)
-    code_map_with_responsibilities.txt (lines: 139)
+    code_map_with_responsibilities.txt (lines: 179)
     dependency_relations.txt (lines: 119)
     Omada_SDN_Controller_V5.9.9 API Document.html (lines: 5302)
     controller-create-gateway-dhcp-lan.har (lines: 36332)
@@ -25,16 +26,16 @@
     config.py (lines: 91)
     api/
       __init__.py (lines: 0)
-      omada_client.py (lines: 613)
+      omada_client.py (lines: 778)
     models/
       __init__.py (lines: 0)
       controller_profile.py (lines: 10)
-      lan.py (lines: 12)
+      lan.py (lines: 22)
     services/
       __init__.py (lines: 0)
       device_service.py (lines: 121)
       lan_service.py (lines: 185)
-      planner.py (lines: 57)
+      planner.py (lines: 94)
       profile_service.py (lines: 96)
     storage/
       __init__.py (lines: 0)
@@ -48,22 +49,25 @@
       state.py (lines: 2)
       theme.py (lines: 137)
       controllers/
-        __init__.py (lines: 9)
-        batch_controller.py (lines: 381)
-        connection_controller.py (lines: 495)
-        networks_controller.py (lines: 313)
+        __init__.py (lines: 13)
+        batch_controller.py (lines: 389)
+        connection_controller.py (lines: 515)
+        networks_controller.py (lines: 322)
+        vlan_batch_controller.py (lines: 332)
       shell/
         __init__.py (lines: 3)
-        app_shell.py (lines: 508)
+        app_shell.py (lines: 529)
       state/
         __init__.py (lines: 3)
-        app_state.py (lines: 20)
+        app_state.py (lines: 26)
       dialogs/
         __init__.py (lines: 0)
         interface_selector.py (lines: 159)
       tabs/
-        __init__.py (lines: 13)
-        batch_tab.py (lines: 246)
+        __init__.py (lines: 19)
+        batch_tab.py (lines: 86)
+        batch_networks_tab.py (lines: 246)
+        batch_vlan_tab.py (lines: 215)
         connection_tab.py (lines: 240)
         current_networks_tab.py (lines: 135)
         developer_tab.py (lines: 49)
@@ -88,15 +92,15 @@ Line Count Ranking (High to Low)
 | 1 | `info/controller-create-switch-dhcp-lan.har` | 36611 |
 | 2 | `info/controller-create-gateway-dhcp-lan.har` | 36332 |
 | 3 | `info/Omada_SDN_Controller_V5.9.9 API Document.html` | 5302 |
-| 4 | `omada_batch/api/omada_client.py` | 613 |
+| 4 | `omada_batch/api/omada_client.py` | 680 |
 | 5 | `omada_batch/ui/controllers/connection_controller.py` | 431 |
-| 6 | `omada_batch/ui/controllers/batch_controller.py` | 331 |
-| 7 | `omada_batch/ui/controllers/networks_controller.py` | 275 |
+| 6 | `omada_batch/ui/controllers/batch_controller.py` | 389 |
+| 7 | `omada_batch/ui/controllers/networks_controller.py` | 315 |
 | 8 | `omada_batch/ui/shell/app_shell.py` | 217 |
 | 9 | `omada_batch/storage/file_change_log.py` | 205 |
 | 10 | `omada_batch/services/lan_service.py` | 185 |
 | 11 | `info/file_structure_with_loc.txt` | 148 |
-| 12 | `info/code_map_with_responsibilities.txt` | 139 |
+| 12 | `info/code_map_with_responsibilities.txt` | 179 |
 | 13 | `omada_batch/services/device_service.py` | 121 |
 | 14 | `info/dependency_relations.txt` | 119 |
 | 15 | `README.md` | 108 |

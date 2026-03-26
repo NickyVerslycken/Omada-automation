@@ -27,6 +27,7 @@ Package: `omada_batch`
 
 - `omada_batch/models/lan.py`
   - `PlannedLan` (frozen dataclass): one planned LAN/VLAN unit for preview/push.
+  - `PlannedVlan` (frozen dataclass): one planned VLAN-only unit (name + vlan_id, no DHCP).
 
 - `omada_batch/storage/file_change_log.py`
   - `append_file_change_log(action, target_path, ...)`: appends JSONL file change events with timestamp, action, path, rollback instructions, and optional details.
@@ -52,6 +53,7 @@ Package: `omada_batch`
 
 - `omada_batch/services/planner.py`
   - `generate_plan(...)`: validates parameters and builds `PlannedLan` list + warnings.
+  - `generate_vlan_plan(...)`: validates VLAN parameters and builds `PlannedVlan` list + warnings.
 
 - `omada_batch/services/lan_service.py`
   - `build_interface_catalog(devices)`: extracts gateway/switch + interface metadata, preferring stable `portId` IDs and natural port `name` labels.
@@ -80,7 +82,8 @@ Package: `omada_batch`
   - `get_device_port_details(...)`: fetches per-device port labels/IDs via `networks/devices/ports` using v3/v2/v1 fallback and payload retries.
   - `_enrich_devices_with_port_details(...)`: merges port payload data into device records for downstream interface catalog building.
   - `get_site_gateways(...)`: resolves gateway candidates from device payloads (v3/v2/v1 endpoint tries).
-  - `create_lan_network(...)`: creates LAN with endpoint fallback (v3/v2/v1) plus request-field retries.
+  - `create_lan_network(...)`: creates LAN with endpoint fallback (v3/v2/v1) plus request-field retries. Supports `dhcp_enabled=False` to create VLANs without DHCP server (`dhcpSettingsVO.enable: false`).
+  - `create_vlan_network(...)`: creates VLAN-only network via `/networks/confirm` endpoint (v3/v2/v1 fallback). Uses `deviceConfig` with gateway MAC/ports and `lanNetwork` with `deviceType: 3`, `dhcpGuard.enable: false`.
 
 UI package split
 
@@ -105,17 +108,26 @@ UI package split
 - `omada_batch/ui/controllers/networks_controller.py`
   - `NetworksControllerMixin`: gateway refresh/selection, current networks fetch/filter/export, interface catalog helpers.
   - Filters DHCP server combobox options to gateway devices only (non-gateway devices are skipped).
+  - Batch DHCP server dropdown includes "None" option at index 0 for creating VLANs without DHCP.
   - `_network_matches_gateway(...)` now also considers extra Omada ownership fields such as `gatewayMac` and `assignIpDeviceMac`.
   - Gateway selection changes now trigger refresh of inline batch-tab interface mapping controls.
   - Network export now writes JSON through changelog-aware storage helper.
 
 - `omada_batch/ui/controllers/batch_controller.py`
-  - `BatchControllerMixin`: plan preview/export and push-to-controller workflow.
-  - Builds and maintains inline LAN-interface mapping UI state in Batch Create tab (no popup), rendered as a grid/table.
+  - `BatchControllerMixin`: plan preview/export and push-to-controller workflow for LAN networks.
+  - Builds and maintains inline LAN-interface mapping UI state in Batch Create > Networks sub-page (no popup), rendered as a grid/table.
   - Resolves interface catalog from selected DHCP server, deduplicates interface IDs, and avoids injecting unrelated network-derived IDs.
   - Disables WAN interfaces in selection UI while keeping them visible with explicit WAN-disabled labels.
   - Validates per-network interface selection directly from tab controls before push.
+  - Supports pushing VLANs without DHCP server when "None" is selected — skips interface selection and passes `dhcp_enabled=False` to API.
   - Plan export now writes JSON through changelog-aware storage helper.
+
+- `omada_batch/ui/controllers/vlan_batch_controller.py`
+  - `VlanBatchControllerMixin`: VLAN-only batch plan generation, port selection, and push workflow.
+  - Manages gateway device selection and port catalog resolution for VLAN sub-page.
+  - Builds inline per-VLAN port selection matrix with WAN ports disabled.
+  - Pushes VLANs via `create_vlan_network()` using gateway MAC and selected port IDs.
+  - Gateway dropdown populated from same device refresh flow as Networks sub-page.
 
 - `omada_batch/ui/shell/app_shell.py`
   - `App` class (CTk root): composes mixins, owns queue/worker loop, builds sidebar + header + status bar layout.
@@ -135,7 +147,13 @@ UI package split
   - `build_current_networks_tab(app)`: builds current-LAN page with CTk toolbar buttons, modern-styled Treeview in a card, and CTkTextbox raw JSON viewer.
 
 - `omada_batch/ui/tabs/batch_tab.py`
-  - `build_batch_tab(app)`: builds batch planning page with card-based parameter form, CTk action buttons, CTkProgressBar, interface selection matrix, and modern-styled plan preview Treeview.
+  - `build_batch_tab(app)`: builds batch page container with CTkSegmentedButton switcher for sub-pages (Networks, VLANs). Extensible registry for future batch types.
+
+- `omada_batch/ui/tabs/batch_networks_tab.py`
+  - `build_batch_networks_subpage(app, parent)`: builds Networks sub-page with card-based parameter form, CTk action buttons, CTkProgressBar, interface selection matrix, and modern-styled plan preview Treeview.
+
+- `omada_batch/ui/tabs/batch_vlan_tab.py`
+  - `build_batch_vlan_subpage(app, parent)`: builds VLANs sub-page with VLAN parameter form (name prefix, start VLAN, count), gateway device selector, port selection matrix, and VLAN plan preview Treeview.
 
 - `omada_batch/ui/tabs/logs_tab.py`
   - `build_logs_tab(app)`: builds log page with CTkTextbox (monospace, wrap=none) in a card and CTk clear button.
